@@ -45,7 +45,7 @@ interface DataState {
   };
 }
 
-const BASEURL = "http://localhost:9000";
+const BASEURL = "http://localhost:9050";
 
 export const urlToFile = async (file: FileUpload): Promise<File | Error> => {
   try {
@@ -74,6 +74,7 @@ export const sendFile = createAsyncThunk(
           body: formData,
         });
 
+        console.log("Sendfile data: ", data);
         data = await data.json();
         return fulfillWithValue(data);
       }

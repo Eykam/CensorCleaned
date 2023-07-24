@@ -2,9 +2,15 @@ import React, { useState, useRef, SyntheticEvent, useEffect } from "react";
 import { componentIDs } from "../store/features/formSlice";
 import "../css/submitForm.css";
 import Toggle from "./toggle";
-import { urlToFile, sendFile } from "../store/features/dataSlice";
+import {
+  urlToFile,
+  sendFile,
+  RequestStates,
+  fetchTranscription,
+} from "../store/features/dataSlice";
 import { useAppSelector, useAppDispatch } from "../store/store";
 import { FileUpload } from "../store/features/fileSlice";
+import { Mode } from "../store/features/dataSlice";
 
 const SubmitSettings = () => {
   //Constants
@@ -13,10 +19,10 @@ const SubmitSettings = () => {
   const dispatch = useAppDispatch();
 
   //States
-  const [mode, setMode] = useState("auto");
+  const [mode, setMode] = useState<Mode>(Mode.auto);
   const [settingsView, setSettingsView] = useState(false);
   const [currFile, setCurrFile] = useState<File | null>(null);
-  // const data = useAppSelector((state) => state.data);
+  const fetchData = useAppSelector((state) => state.data);
   const currFileUpload: FileUpload | null = useAppSelector(
     (state) => state.file.uploadedFile
   );
@@ -33,9 +39,9 @@ const SubmitSettings = () => {
     const event = e.target as HTMLButtonElement;
 
     if (event.id === "manualButton") {
-      setMode("manual");
+      setMode(Mode.manual);
     } else if (event.id === "autoButton") {
-      setMode("auto");
+      setMode(Mode.auto);
     }
   };
 
@@ -54,10 +60,25 @@ const SubmitSettings = () => {
   };
 
   useEffect(() => {
-    if (currFile !== null) {
+    if (currFile !== null && fetchData.sendFile.status === RequestStates.idle) {
       dispatch(sendFile(currFile));
     }
-  }, [currFile, dispatch]);
+  }, [currFile, fetchData.sendFile.status, dispatch]);
+
+  useEffect(() => {
+    if (
+      fetchData.sendFile.status === RequestStates.success &&
+      fetchData.transcription.status === RequestStates.idle
+    ) {
+      console.log("Moving to transcription...");
+      // dispatch(fetchTranscription(mode));
+    }
+  }, [
+    fetchData.sendFile.status,
+    fetchData.transcription.status,
+    mode,
+    dispatch,
+  ]);
 
   useEffect(() => {
     if (mode === "auto") {
