@@ -1,22 +1,19 @@
-import React, { useEffect } from "react";
+import React from "react";
+import "../css/progressBar.css";
 
 interface Props {
   bgColor: string;
-  completed: string;
+  completed: number;
 }
 
 const ProgressBar = ({ bgColor, completed }: Props) => {
-  useEffect(() => {
-    console.log("completed", completed);
-  });
-
   return (
     <div id="container-styles">
       <div
         id="filler-styles"
         style={{ width: `${completed}%`, backgroundColor: bgColor }}
       >
-        <span id="label-styles">{`${parseFloat(completed).toFixed(2)}%`}</span>
+        {/* <span id="label-styles">{`${completed.toFixed(2)}%`}</span> */}
       </div>
     </div>
   );

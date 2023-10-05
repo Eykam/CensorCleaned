@@ -1,4 +1,4 @@
-import { PropsWithChildren } from "react";
+import React, { PropsWithChildren } from "react";
 import { useAppSelector } from "../store/store";
 
 interface Props {
@@ -7,7 +7,7 @@ interface Props {
 
 const Toggle = ({ id, children }: PropsWithChildren<Props>) => {
   const show = useAppSelector((state) => state.form[id]);
-  return show ? children : null;
+  return <>{show ? children : null}</>;
 };
 
 export default Toggle;

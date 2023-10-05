@@ -5,6 +5,15 @@
 #body-div {
   height: 100%;
   width: 100%;
-  justify-content: center;
+  min-width: 100vw;
+  display: flex;
+  margin: auto;
   align-items: center;
+  overflow-y: scroll;
 }
+
+/* 
+@media screen and (max-width: 767px) {
+  #body-div {
+  }
+} */

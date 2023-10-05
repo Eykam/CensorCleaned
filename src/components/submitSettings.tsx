@@ -11,6 +11,8 @@ import {
 import { useAppSelector, useAppDispatch } from "../store/store";
 import { FileUpload } from "../store/features/fileSlice";
 import { Mode } from "../store/features/dataSlice";
+import ProgressBar from "./progressBar";
+import { socket } from "../socket";
 
 const SubmitSettings = () => {
   //Constants
@@ -20,68 +22,70 @@ const SubmitSettings = () => {
 
   //States
   const [mode, setMode] = useState<Mode>(Mode.auto);
-  const [settingsView, setSettingsView] = useState(false);
+  const [progress, setProgress] = useState<number>(0);
+
   const [currFile, setCurrFile] = useState<File | null>(null);
   const fetchData = useAppSelector((state) => state.data);
   const currFileUpload: FileUpload | null = useAppSelector(
     (state) => state.file.uploadedFile
   );
+  const pending = useAppSelector((state) => state.data.transcription.status);
 
   //Refs
   const autoRef = useRef<HTMLButtonElement>(null);
   const manualRef = useRef<HTMLButtonElement>(null);
   const advSettingsRef = useRef<HTMLButtonElement>(null);
   const submitRef = useRef<HTMLButtonElement>(null);
-  const filterRef = useRef<HTMLTextAreaElement>(null);
 
   //Functions and Event Handlers
-  const toggleMode = (e: SyntheticEvent) => {
-    const event = e.target as HTMLButtonElement;
-
-    if (event.id === "manualButton") {
-      setMode(Mode.manual);
-    } else if (event.id === "autoButton") {
-      setMode(Mode.auto);
-    }
-  };
-
-  const toggleSettings = () => {
-    setSettingsView((prev) => !prev);
-  };
-
   const submitFunction = async () => {
     if (currFileUpload) {
       console.log("Submitting: ", currFileUpload);
       let currFile = await urlToFile(currFileUpload);
-      if (currFile != null && !(currFile instanceof Error))
+      if (currFile != null && !(currFile instanceof Error)) {
         setCurrFile(currFile);
-      else console.log("file is either null or threw an error");
+        if (submitRef.current) submitRef.current.style.display = "none";
+      } else console.log("file is either null or threw an error");
     }
   };
 
+  //UseEffect to trigger sendFile thunk when currFile is transformed into a file successfully
   useEffect(() => {
     if (currFile !== null && fetchData.sendFile.status === RequestStates.idle) {
       dispatch(sendFile(currFile));
     }
   }, [currFile, fetchData.sendFile.status, dispatch]);
 
+  //UseEffect to trigger fetchTranscription api call when sendFile has been executed successfully
   useEffect(() => {
     if (
       fetchData.sendFile.status === RequestStates.success &&
-      fetchData.transcription.status === RequestStates.idle
+      fetchData.transcription.status === RequestStates.idle &&
+      fetchData.sendFile.response !== undefined
     ) {
       console.log("Moving to transcription...");
-      // dispatch(fetchTranscription(mode));
+
+      socket.emit("uploadedFile", fetchData.sendFile.response.body.uuid);
+
+      dispatch(
+        fetchTranscription({
+          mode: mode,
+          uuid: fetchData.sendFile.response.body.uuid,
+        })
+      );
+      updateProgress();
+    } else {
     }
   }, [
     fetchData.sendFile.status,
+    fetchData.sendFile.response,
     fetchData.transcription.status,
     mode,
     dispatch,
   ]);
 
   useEffect(() => {
-    if (mode === "auto") {
+    if (mode === Mode.auto) {
       if (advSettingsRef.current)
         advSettingsRef.current.style.display = "block";
 
@@ -97,8 +101,7 @@ const SubmitSettings = () => {
         autoRef.current.style.color = selectedStyle.color;
         autoRef.current.disabled = true;
       }
-    } else if (mode === "manual") {
-      setSettingsView(false);
+    } else if (mode === Mode.manual) {
       if (advSettingsRef.current) advSettingsRef.current.style.display = "none";
 
       if (manualRef.current) {
@@ -121,74 +124,49 @@ const SubmitSettings = () => {
     unselectedStyle.color,
   ]);
 
+  const updateProgress = async function () {
+    var secondsRan = 0.0;
+    var interval = setInterval(function () {
+      secondsRan += 1.0;
+      if (currFile && currFile !== undefined) {
+        var percentage = ((secondsRan * 1.25 * 1000000) / currFile.size) * 100;
+
+        if (percentage < 100) {
+          setProgress(percentage);
+        } else {
+          clearInterval(interval);
+        }
+      } else {
+        clearInterval(interval);
+      }
+    }, 1000);
+  };
+
   return (
     <Toggle id={componentIDs.formSettings}>
-      <div
-        style={{
-          display: "flex",
-          width: "100%",
-          justifyContent: "space-between",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            width: "75%",
-          }}
-        >
-          <button
-            className="audio-side-buttons-auto"
-            id="autoButton"
-            onClick={toggleMode}
-            ref={autoRef}
-          >
-            <b>Automatic</b>
-          </button>
-
-          <button
-            className="audio-side-buttons-manual"
-            id="manualButton"
-            onClick={toggleMode}
-            ref={manualRef}
-          >
-            <b>Manual</b>
-          </button>
-
-          <button
-            className="audio-side-buttons"
-            onClick={toggleSettings}
-            ref={advSettingsRef}
-          >
-            <b>Advanced Settings</b>
-          </button>
-        </div>
-
+      <div style={{ width: "100%", marginTop: "4%" }}>
         <button
           className="audio-side-buttons"
+          style={{ float: "right", color: "rgb(70,70,70)" }}
           ref={submitRef}
           onClick={submitFunction}
-          //   disabled={loading ? true : false}
+          disabled={
+            pending === RequestStates.pending ||
+            pending === RequestStates.success
+              ? true
+              : false
+          }
         >
           <b>Submit</b>
         </button>
       </div>
 
-      {settingsView && (
-        <div className="settings-outer">
-          <p className="settings-inner">
-            Enter words you'd like to filter, separated by commas
-            <br />
-            <br />
-            <b style={{ display: "flex", justifyContent: "center" }}>
-              Example: one, two, three
-            </b>
-          </p>
-          <textarea
-            ref={filterRef}
-            className="settings-textarea"
-            // onChange={updateFilter}
-          ></textarea>
+      {fetchData.transcription.status === "pending" ? (
+        <div style={{ width: "100%", marginTop: "2%" }}>
+          <ProgressBar bgColor={"#ececec"} completed={progress} />
         </div>
+      ) : (
+        <></>
       )}
     </Toggle>
   );

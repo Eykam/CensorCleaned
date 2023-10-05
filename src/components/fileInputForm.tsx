@@ -3,8 +3,10 @@ import { useAppDispatch } from "../store/store";
 import { checkFileType } from "../types/fileTypes";
 import {
   hideFileInput,
-  showFileInfo,
   componentIDs,
+  showSubmitForm,
+  hideDescription,
+  hideFAQ,
 } from "../store/features/formSlice";
 import "../css/fileInputForm.css";
 import { uploadFile, createFileUpload } from "../store/features/fileSlice";
@@ -65,7 +67,6 @@ const FileInputForm = () => {
     if (file.type && checkFileType(file.type)) {
       storeFile(file);
       if (inputRef.current) inputRef.current.value = "";
-      // inputRef.current.key = Date.now();
     } else {
       displayInvalidFile(file);
     }
@@ -81,7 +82,9 @@ const FileInputForm = () => {
   //Hides form after FileUpload is successfully stored
   const hideForm = () => {
     dispatch(hideFileInput());
-    dispatch(showFileInfo());
+    dispatch(hideDescription());
+    dispatch(hideFAQ());
+    dispatch(showSubmitForm());
   };
 
   //Function to edit inputbox to display error if selected file is invalid
@@ -116,7 +119,11 @@ const FileInputForm = () => {
           className={dragActive ? "drag-active" : ""}
         >
           <div className="input-box">
-            <p>Drag and drop your file here or</p>
+            <p style={{ marginBottom: "0" }}>
+              Drag and drop your file here
+              <br />
+              or
+            </p>
             <button className="upload-button" onClick={onButtonClick}>
               Upload a file
             </button>
