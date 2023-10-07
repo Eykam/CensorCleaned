@@ -19,6 +19,10 @@ const SelectedWords = () => {
     return window.innerWidth <= 1500;
   };
 
+  const checkBrowser = () => {
+    return window.matchMedia("(max-width: 767px)").matches;
+  };
+
   const expand = (curr: string) => {
     const currExpander = document.getElementById(
       curr + "-expand-selected"
@@ -362,7 +366,7 @@ const SelectedWords = () => {
       <div
         style={{
           height: "85%",
-          maxHeight: "85%",
+          maxHeight: checkBrowser() ? "25vh" : "72%",
           overflow: "scroll",
         }}
       >
@@ -421,7 +425,11 @@ const SelectedWords = () => {
                     <div
                       className="expanded"
                       id={curr + "-expand-selected"}
-                      style={{ display: "none", width: "100%" }}
+                      style={{
+                        display: "none",
+                        width: "100%",
+                        height: checkBrowser() ? "25vh" : "74%",
+                      }}
                     >
                       {entry[curr].map((time) => {
                         return (

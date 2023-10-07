@@ -39,6 +39,9 @@ const App = () => {
                 }
               : { margin: "0" }
           }
+          onClick={() => {
+            window.location.reload();
+          }}
         >
           Sanitize.gg
         </h2>

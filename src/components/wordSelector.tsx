@@ -744,7 +744,7 @@ const WordSelector = ({ originalEntries }: WordSelectorComponenets) => {
         id="unselected-outer"
         style={{
           height: "47%",
-          maxHeight: "72%",
+          maxHeight: checkBrowser() ? "25vh" : "72%",
           overflow: "scroll",
         }}
       >
