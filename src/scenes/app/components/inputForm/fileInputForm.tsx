@@ -1,16 +1,22 @@
 import React, { SyntheticEvent, useRef, useState } from "react";
-import { useAppDispatch } from "../store/store";
-import { checkFileType } from "../types/fileTypes";
+import { useAppDispatch } from "../../../../store/store";
+import { checkFileType } from "../../../../types/fileTypes";
 import {
   hideFileInput,
   componentIDs,
   showSubmitForm,
   hideDescription,
   hideFAQ,
-} from "../store/features/formSlice";
-import "../css/fileInputForm.css";
-import { uploadFile, createFileUpload } from "../store/features/fileSlice";
-import Toggle from "./toggle";
+  showDashboard,
+} from "../../../../store/features/formSlice";
+import "../../css/fileInputForm.css";
+import {
+  uploadFile,
+  createFileUpload,
+} from "../../../../store/features/fileSlice";
+import Toggle from "../../../utils/components/toggle";
+import Button from "@mui/material/Button";
+import { CloudUpload } from "@mui/icons-material";
 
 const FileInputForm = () => {
   //--------------------------------------------------- States ------------------------------------------------------
@@ -85,6 +91,7 @@ const FileInputForm = () => {
     dispatch(hideDescription());
     dispatch(hideFAQ());
     dispatch(showSubmitForm());
+    // dispatch(showDashboard());
   };
 
   //Function to edit inputbox to display error if selected file is invalid
@@ -124,9 +131,19 @@ const FileInputForm = () => {
               <br />
               or
             </p>
-            <button className="upload-button" onClick={onButtonClick}>
+            {/* <button className="upload-button" onClick={onButtonClick}>
               Upload a file
             </button>
+             */}
+            <Button
+              component="label"
+              variant="contained"
+              startIcon={<CloudUpload />}
+              onClick={onButtonClick}
+              style={{ backgroundColor: "rgb(100,100,100)" }}
+            >
+              Upload file
+            </Button>
           </div>
         </label>
         {dragActive && (

@@ -1,9 +1,12 @@
 import React, { useEffect, useRef } from "react";
-import Toggle from "./toggle";
-import { componentIDs, showCensoredVideo } from "../store/features/formSlice";
-import { useAppDispatch, useAppSelector } from "../store/store";
-import { RequestStates } from "../store/features/dataSlice";
-import Loading from "./loading";
+import Toggle from "../../../utils/components/toggle";
+import {
+  componentIDs,
+  showCensoredVideo,
+} from "../../../../store/features/formSlice";
+import { useAppDispatch, useAppSelector } from "../../../../store/store";
+import { RequestStates } from "../../../../store/features/dataSlice";
+import Loading from "../../../utils/components/loading";
 
 const CensoredVideo = () => {
   const dispatch = useAppDispatch();
@@ -135,7 +138,7 @@ const CensoredVideo = () => {
             controls
             id="censored-video"
             style={{
-              width: checkIFSmallLaptop() ? "90vw" : "100%",
+              width: checkIFSmallLaptop() ? "90%" : "100%",
               borderRadius: "15px",
               display:
                 censorStatus === RequestStates.pending ? "none" : "block",

@@ -1,8 +1,8 @@
 import React from "react";
-import { useAppDispatch, useAppSelector } from "../store/store";
+import { useAppDispatch, useAppSelector } from "../../../store/store";
 import "../css/FAQ.css";
-import Toggle from "./toggle";
-import { componentIDs } from "../store/features/formSlice";
+import Toggle from "../../utils/components/toggle";
+import { componentIDs } from "../../../store/features/formSlice";
 
 const FAQ = () => {
   const FAQs: { [index: string]: string } = {
@@ -67,7 +67,7 @@ const FAQ = () => {
             minHeight: "50vh",
             margin: "0",
             marginBottom: "4%",
-            background: "rgb(50, 50, 50)",
+            background: "rgb(80, 80, 80)",
             padding: "5% 2%",
           }}
         >
@@ -87,6 +87,7 @@ const FAQ = () => {
                   style={{
                     flexDirection: checkSmaller() ? "column" : "row",
                     justifyContent: "center",
+                    cursor: "pointer",
                   }}
                 >
                   <p
@@ -123,6 +124,7 @@ const FAQ = () => {
                 <div style={{ display: "block" }} key={question}>
                   <div
                     id={"question-" + question}
+                    style={{ cursor: "pointer" }}
                     className="faq-questions"
                     onClick={() => {
                       expand(question);

@@ -12,9 +12,7 @@ const ProgressBar = ({ bgColor, completed }: Props) => {
       <div
         id="filler-styles"
         style={{ width: `${completed}%`, backgroundColor: bgColor }}
-      >
-        {/* <span id="label-styles">{`${completed.toFixed(2)}%`}</span> */}
-      </div>
+      ></div>
     </div>
   );
 };

@@ -30,7 +30,7 @@ export interface CensorMap {
 export interface TranscriptionResponse {
   data: [{ text: string; start: number; end: number }];
   requestTime: string;
-  badWords: { [index: string]: string };
+  badWords: { [index: string]: { percentage: number; reason: string } };
 }
 
 interface DataState {
@@ -62,6 +62,7 @@ interface DataState {
 }
 
 const BASEURL = "http://192.168.1.171:8800";
+const CENSOR_THRESHOLD = 0.65;
 
 function generateUUID() {
   // Public Domain/MIT
@@ -129,12 +130,16 @@ export const sendFile = createAsyncThunk(
 export const fetchTranscription = createAsyncThunk(
   "file/fetchTranscription",
   async (
-    args: { mode: Mode; uuid: String },
+    args: { mode: Mode; uuid: String; contentType: String },
     { rejectWithValue, fulfillWithValue }
   ) => {
     try {
       if (args.uuid != null && args.uuid !== "") {
-        let body = JSON.stringify({ filename: args.uuid, mode: args.mode });
+        let body = JSON.stringify({
+          filename: args.uuid,
+          mode: args.mode,
+          contentType: args.contentType,
+        });
         console.log("Transcription Body: ", body);
         let data = await fetch(BASEURL + endpoints.fetchTranscription, {
           method: "POST",
@@ -212,8 +217,15 @@ export const dataSlice = createSlice({
       state.originalWordList = payload.entries;
 
       Object.keys(payload.entries).forEach((currWord) => {
-        if (state.transcription.response != null) {
-          if (state.transcription.response.badWords[currWord] !== undefined) {
+        if (
+          state.transcription.response != null &&
+          state.transcription.response.badWords !== undefined
+        ) {
+          if (
+            state.transcription.response.badWords[currWord] !== undefined &&
+            state.transcription.response.badWords[currWord]["percentage"] >=
+              CENSOR_THRESHOLD
+          ) {
             state.suggestedWords[currWord] = payload.entries[currWord];
             delete state.unselectedWords[currWord];
           }

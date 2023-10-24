@@ -1,7 +1,7 @@
 import React from "react";
-import { useAppDispatch, useAppSelector } from "../store/store";
-import { componentIDs } from "../store/features/formSlice";
-import Toggle from "./toggle";
+import { useAppDispatch, useAppSelector } from "../../../store/store";
+import { componentIDs } from "../../../store/features/formSlice";
+import Toggle from "../../utils/components/toggle";
 
 const Description = () => {
   const checkSmaller = () => {
@@ -30,7 +30,7 @@ const Description = () => {
         style={{
           display: "flex",
           flexDirection: "column",
-          minHeight: checkMobile() ? "80vh" : "50vh",
+          minHeight: checkMobile() ? "80vh" : "70vh",
           width: checkMobile() ? "90%" : "60%",
           color: "lightgray",
           //   fontWeight: "bold",
@@ -85,7 +85,8 @@ const Description = () => {
             fontWeight: "bold",
             color: "lightgrey",
             border: "solid 2px lightgrey",
-            boxShadow: "10px 5px 5px rgb(50,50,50)",
+            boxShadow: "6px 5px 5px rgb(40,40,40)",
+            cursor: "pointer",
           }}
           onMouseOver={(e) => {
             const el = e.target as HTMLButtonElement;

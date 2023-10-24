@@ -9,18 +9,12 @@ body {
   width: 100%;
   margin: 0%;
   display: flex;
-  font-family: sans-serif;
+  /* font-family: sans-serif;
   -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  background-color: rgb(61, 61, 61);
+  -moz-osx-font-smoothing: grayscale; */
+  background-color: #111111;
   overflow: hidden;
 }
-
-/* @media screen and (max-width: 767px) {
-  body {
-    padding-bottom: 2%;
-  }
-} */
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",

@@ -3,7 +3,7 @@
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-left: 2%;
+  margin-left: 0.75%;
 }
 .loading {
   position: relative;
@@ -72,6 +72,6 @@
 .loading .x:nth-child(8) {
   left: 35px;
 
-  background-color: rgb(0, 0, 0);
+  background-color: rgb(30, 30, 30);
   animation-delay: 0.7s;
 }

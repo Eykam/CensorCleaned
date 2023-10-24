@@ -3,6 +3,9 @@ import { fileSlice } from "./features/fileSlice";
 import { formSlice } from "./features/formSlice";
 import { dataSlice } from "./features/dataSlice";
 import { TypedUseSelectorHook, useDispatch, useSelector } from "react-redux";
+import { enableMapSet } from "immer";
+
+enableMapSet();
 
 export const store = configureStore({
   reducer: {

@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "../store/store";
-import Toggle from "./toggle";
-import { componentIDs } from "../store/features/formSlice";
-import { RequestStates } from "../store/features/dataSlice";
-import Loading from "./loading";
+import { useAppDispatch, useAppSelector } from "../../../../store/store";
+import Toggle from "../../../utils/components/toggle";
+import { componentIDs } from "../../../../store/features/formSlice";
+import { RequestStates } from "../../../../store/features/dataSlice";
+import Loading from "../../../utils/components/loading";
 
 const FileInfo = () => {
   const dispatch = useAppDispatch();
@@ -50,7 +50,7 @@ const FileInfo = () => {
         <div style={{ width: "fit-content", minWidth: "40vw" }}>
           <h3 style={{ marginTop: "0" }}>Submission Details:</h3>
 
-          <p>
+          <p style={{ display: "flex", maxWidth: "80%" }}>
             <b>File Name:</b> {file?.fileName}
           </p>
 
@@ -77,6 +77,8 @@ const FileInfo = () => {
               src={file.fileUrl}
               style={{
                 width: "100%",
+                borderRadius: "5px",
+                marginTop: "auto",
               }}
             />
           ) : (
@@ -87,7 +89,7 @@ const FileInfo = () => {
               src={file?.fileUrl}
               style={{
                 width: "100%",
-                borderRadius: "10px",
+                borderRadius: "5px",
                 marginTop: "auto",
               }}
             />

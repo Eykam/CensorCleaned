@@ -1,23 +1,22 @@
 import React, { useState, useRef, SyntheticEvent, useEffect } from "react";
-import { componentIDs } from "../store/features/formSlice";
-import "../css/submitForm.css";
-import Toggle from "./toggle";
+import { componentIDs } from "../../../../store/features/formSlice";
+import "../../css/submitForm.css";
+import Toggle from "../../../utils/components/toggle";
 import {
   urlToFile,
   sendFile,
   RequestStates,
   fetchTranscription,
-} from "../store/features/dataSlice";
-import { useAppSelector, useAppDispatch } from "../store/store";
-import { FileUpload } from "../store/features/fileSlice";
-import { Mode } from "../store/features/dataSlice";
-import ProgressBar from "./progressBar";
-import { socket } from "../socket";
+} from "../../../../store/features/dataSlice";
+import { useAppSelector, useAppDispatch } from "../../../../store/store";
+import { FileUpload } from "../../../../store/features/fileSlice";
+import { Mode } from "../../../../store/features/dataSlice";
+import ProgressBar from "../../../utils/components/progressBar";
+import { socket } from "../../../../socket";
+import { Button } from "@mui/material";
 
 const SubmitSettings = () => {
   //Constants
-  const selectedStyle = { backgroundColor: "#ececec", color: "#3d3d3d" };
-  const unselectedStyle = { backgroundColor: "#3d3d3d", color: "#ececec" };
   const dispatch = useAppDispatch();
 
   //States
@@ -32,9 +31,6 @@ const SubmitSettings = () => {
   const pending = useAppSelector((state) => state.data.transcription.status);
 
   //Refs
-  const autoRef = useRef<HTMLButtonElement>(null);
-  const manualRef = useRef<HTMLButtonElement>(null);
-  const advSettingsRef = useRef<HTMLButtonElement>(null);
   const submitRef = useRef<HTMLButtonElement>(null);
 
   //Functions and Event Handlers
@@ -61,7 +57,8 @@ const SubmitSettings = () => {
     if (
       fetchData.sendFile.status === RequestStates.success &&
       fetchData.transcription.status === RequestStates.idle &&
-      fetchData.sendFile.response !== undefined
+      fetchData.sendFile.response !== undefined &&
+      currFileUpload != null
     ) {
       console.log("Moving to transcription...");
 
@@ -71,6 +68,7 @@ const SubmitSettings = () => {
         fetchTranscription({
           mode: mode,
           uuid: fetchData.sendFile.response.body.uuid,
+          contentType: currFileUpload.fileType,
         })
       );
       updateProgress();
@@ -81,47 +79,8 @@ const SubmitSettings = () => {
     fetchData.sendFile.response,
     fetchData.transcription.status,
     mode,
+    currFileUpload,
     dispatch,
-  ]);
-
-  useEffect(() => {
-    if (mode === Mode.auto) {
-      if (advSettingsRef.current)
-        advSettingsRef.current.style.display = "block";
-
-      if (manualRef.current) {
-        manualRef.current.style.backgroundColor =
-          unselectedStyle.backgroundColor;
-        manualRef.current.style.color = unselectedStyle.color;
-        manualRef.current.disabled = false;
-      }
-
-      if (autoRef.current) {
-        autoRef.current.style.backgroundColor = selectedStyle.backgroundColor;
-        autoRef.current.style.color = selectedStyle.color;
-        autoRef.current.disabled = true;
-      }
-    } else if (mode === Mode.manual) {
-      if (advSettingsRef.current) advSettingsRef.current.style.display = "none";
-
-      if (manualRef.current) {
-        manualRef.current.style.backgroundColor = selectedStyle.backgroundColor;
-        manualRef.current.style.color = selectedStyle.color;
-        manualRef.current.disabled = true;
-      }
-
-      if (autoRef.current) {
-        autoRef.current.style.backgroundColor = unselectedStyle.backgroundColor;
-        autoRef.current.style.color = unselectedStyle.color;
-        autoRef.current.disabled = false;
-      }
-    }
-  }, [
-    mode,
-    selectedStyle.backgroundColor,
-    selectedStyle.color,
-    unselectedStyle.backgroundColor,
-    unselectedStyle.color,
   ]);
 
   const updateProgress = async function () {
@@ -144,10 +103,16 @@ const SubmitSettings = () => {
 
   return (
     <Toggle id={componentIDs.formSettings}>
-      <div style={{ width: "100%", marginTop: "4%" }}>
-        <button
-          className="audio-side-buttons"
-          style={{ float: "right", color: "rgb(70,70,70)" }}
+      <div style={{ width: "100%", marginTop: "0%" }}>
+        <Button
+          variant="contained"
+          style={{
+            float: "right",
+            fontWeight: "bold",
+            width: "20%",
+            color: "lightgray",
+            backgroundColor: "rgb(120,120,120)",
+          }}
           ref={submitRef}
           onClick={submitFunction}
           disabled={
@@ -157,8 +122,8 @@ const SubmitSettings = () => {
               : false
           }
         >
-          <b>Submit</b>
-        </button>
+          Submit
+        </Button>
       </div>
 
       {fetchData.transcription.status === "pending" ? (

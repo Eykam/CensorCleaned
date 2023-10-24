@@ -1,5 +1,5 @@
 import React, { PropsWithChildren } from "react";
-import { useAppSelector } from "../store/store";
+import { useAppSelector } from "../../../store/store";
 
 interface Props {
   id: string;

@@ -1,16 +1,14 @@
 .manual-outer {
   height: 100%;
-  width: 50%;
-  margin: 0 2%;
-  margin-right: 0%;
+  min-height: 100%;
   display: grid;
+  width: 100%;
   grid-template-columns: 50% 50%;
+  grid-template-rows: 100% 100%;
 }
 
 .manual-inner {
-  border: rgb(59, 59, 59) solid 4px;
-  box-shadow: 10px 10px 8px hsla(0, 0%, 9%, 0.38);
-  border-radius: 15px;
+  border-radius: 5px;
   max-height: 100%;
   margin-top: 5%;
   padding: 5%;

@@ -1,25 +1,27 @@
-import React, { SyntheticEvent, useEffect, useRef } from "react";
-import "../css/submitForm.css";
-import Toggle from "./toggle";
+import React, { SyntheticEvent, useEffect, useRef, useState } from "react";
+import "../../css/submitForm.css";
+import Toggle from "../../../utils/components/toggle";
 import FileInfo from "./fileInfo";
 import {
   componentIDs,
   hideFileInfo,
   showFileInfo,
-} from "../store/features/formSlice";
-
-import { useAppDispatch, useAppSelector } from "../store/store";
-import SubmitSettings from "./submitSettings";
-import AudioWave from "./audioWave";
-import ManualResults from "./manualResults";
-import TimestampSubmit from "./timestampSubmit";
-import CensoredVideo from "./censoredVideo";
-import { RequestStates } from "../store/features/dataSlice";
-import Loading from "./loading";
+} from "../../../../store/features/formSlice";
+import { useAppDispatch, useAppSelector } from "../../../../store/store";
+import SubmitSettings from "./transcribeSubmit";
+import AudioWave from "../../../utils/components/audioWave";
+import TimestampSubmit from "../dashboard/components/censorSubmit";
+import { RequestStates } from "../../../../store/features/dataSlice";
+import Loading from "../../../utils/components/loading";
+import CloseIcon from "@mui/icons-material/Close";
+import { IconButton, Button } from "@mui/material";
+import NotificationsOffOutlinedIcon from "@mui/icons-material/NotificationsOffOutlined";
+import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
 
 const SubmitForm = () => {
   const dispatch = useAppDispatch();
 
+  const [notifications, setNotifications] = useState(false);
   const transcriptionStatus = useAppSelector(
     (state) => state.data.transcription.status
   );
@@ -36,8 +38,12 @@ const SubmitForm = () => {
     // function to actually ask the permissions
     const handlePermission = (permission: NotificationPermission) => {
       // set the button to shown or hidden, depending on what the user answers
-      (e.target as HTMLButtonElement).style.display =
-        Notification.permission === "granted" ? "none" : "block";
+
+      if (Notification.permission === "granted") {
+        setNotifications(true);
+      } else {
+        setNotifications(false);
+      }
     };
 
     // Let's check if the browser supports notifications
@@ -88,33 +94,16 @@ const SubmitForm = () => {
               paddingTop: "0%",
             }}
           >
-            {/* <button
-              onClick={back}
-              id="back-button"
-              style={{
-                paddingLeft: "0px",
-                marginRight: "0%",
-                marginBottom: "2%",
-              }}
-            >
-              &larr;
-            </button> */}
-
             <h1>Analyzing Audio</h1>
             <AudioWave />
           </div>
 
           <div style={{ display: "block" }}>
             <FileInfo />
-
-            <CensoredVideo />
-
-            <ManualResults mobile={true} />
           </div>
           <Loading loaderId="transcribe" />
           <SubmitSettings />
 
-          <TimestampSubmit />
           <br />
         </div>
       ) : (
@@ -122,63 +111,73 @@ const SubmitForm = () => {
           id="submit-form"
           className="submit-form form-outer"
           style={{
-            display: "flex",
-            flexDirection: "column",
             maxWidth: "40vw",
             minWidth: "40vw",
-            maxHeight: "fit-content",
+            maxHeight: "90%",
+            display: "flex",
+            flexDirection: "column",
+            position: "relative",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <button
-              onClick={back}
-              id="back-button"
-              style={{ display: "flex", marginRight: "2%" }}
-            >
-              &larr;
-            </button>
+          <IconButton
+            onClick={back}
+            id="back-button"
+            aria-label="back-button"
+            style={{
+              position: "absolute",
+              top: "0",
+              left: "0",
+              padding: "0",
+              margin: "1%",
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
 
+          <IconButton
+            aria-label="get notifications"
+            style={{
+              position: "absolute",
+              top: "0",
+              right: "0",
+              background: "rgb(100, 100, 100)",
+              padding: "1%",
+              margin: "1%",
+              color: notifications
+                ? "rgb(125, 186, 143)"
+                : "rgb(186, 125, 125)",
+            }}
+            // color={notifications ? "success" : "error"}
+            onClick={(e) => {
+              askNotificationPermission(e);
+            }}
+          >
+            {notifications ? (
+              <NotificationsNoneOutlinedIcon />
+            ) : (
+              <NotificationsOffOutlinedIcon />
+            )}
+          </IconButton>
+
+          <div style={{ display: "flex", alignItems: "center" }}>
             <h1>Analyzing Audio</h1>
             <AudioWave />
-
-            <button
-              style={{
-                marginLeft: "auto",
-                background: "rgb(100, 100, 100)",
-                borderRadius: "7px",
-                borderStyle: "solid",
-                border: "none",
-                color: "LightGrey",
-                padding: "1%",
-              }}
-              onClick={(e) => {
-                askNotificationPermission(e);
-              }}
-            >
-              Notify Me
-            </button>
           </div>
 
           <div
             style={{
               display: "flex",
-              height: "75%",
+              height: "90%",
               margin: "0 auto",
               maxWidth: "100%",
               minWidth: "100%",
             }}
           >
             <FileInfo />
-
-            <CensoredVideo />
-            <ManualResults mobile={false} />
           </div>
 
           <Loading loaderId="transcribe" />
-
           <SubmitSettings />
-
-          <TimestampSubmit />
         </div>
       )}
     </Toggle>
