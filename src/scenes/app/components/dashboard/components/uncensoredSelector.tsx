@@ -12,6 +12,7 @@ import {
 import {
   WordList,
   hideFormSettings,
+  resetCheckLists,
   showTimestampSubmit,
   updateTimestamp,
   updateWord,
@@ -229,6 +230,7 @@ const UncensoredSelector = ({
 
   const reset = () => {
     dispatch(resetWordList());
+    dispatch(resetCheckLists());
   };
 
   const hideSuggestions = () => {
@@ -253,10 +255,8 @@ const UncensoredSelector = ({
       setSuggestionsHidden(true);
       suggestionExpander.innerText = "[+]";
     } else {
-      if (Object.keys(suggestions).length > 0) {
-        suggestionsExpanded.style.display = "block";
-        setSuggestionsHidden(false);
-      }
+      suggestionsExpanded.style.display = "block";
+      setSuggestionsHidden(false);
 
       suggestionExpander.innerText = "[-]";
     }
@@ -323,10 +323,6 @@ const UncensoredSelector = ({
             <Button
               variant="contained"
               style={{
-                display: "inline-block",
-                marginLeft: "auto",
-                fontWeight: "bold",
-                margin: "0",
                 padding: "2%",
                 color: "lightgray",
                 backgroundColor: "rgb(80,80,80)",
@@ -339,9 +335,8 @@ const UncensoredSelector = ({
             <Button
               variant="contained"
               style={{
-                display: "inline-block",
-                marginLeft: "auto",
-                fontWeight: "bold",
+                visibility:
+                  Object.keys(checkList).length >= 1 ? "visible" : "hidden",
                 margin: "0",
                 padding: "2%",
                 color: "lightgray",
@@ -349,7 +344,7 @@ const UncensoredSelector = ({
               }}
               onClick={confirmSelection}
             >
-              Add
+              Censor
             </Button>
           </div>
         </div>
@@ -416,15 +411,35 @@ const UncensoredSelector = ({
             margin: "0",
           }}
         >
-          <List
-            height={suggestionsHidden ? 0 : 100}
-            width={"100%"}
-            itemCount={visibleSuggestion.length}
-            itemSize={25}
-            itemData={{ list: visibleSuggestion, caller: Callers.suggested }}
-          >
-            {rows}
-          </List>
+          {Object.keys(suggestions).length > 0 ? (
+            <List
+              height={suggestionsHidden ? 0 : 100}
+              width={"100%"}
+              itemCount={visibleSuggestion.length}
+              itemSize={25}
+              itemData={{
+                list: visibleSuggestion.sort(),
+                caller: Callers.suggested,
+              }}
+            >
+              {rows}
+            </List>
+          ) : (
+            <div
+              style={{
+                height: 100,
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                textAlign: "center",
+                justifyContent: "center",
+                color: "rgb(110,110,110)",
+              }}
+            >
+              {" "}
+              None{" "}
+            </div>
+          )}
         </div>
       </Paper>
 
@@ -458,7 +473,7 @@ const UncensoredSelector = ({
           width={"100%"}
           itemCount={visibleEntry.length}
           itemSize={25}
-          itemData={{ list: visibleEntry, caller: Callers.unselected }}
+          itemData={{ list: visibleEntry.sort(), caller: Callers.unselected }}
         >
           {rows}
         </List>

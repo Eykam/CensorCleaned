@@ -6,6 +6,8 @@ import { Box, Paper } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useRef, useState } from "react";
 import { Callers } from "./wordCard";
+import { updateFocusedWord } from "../../../../../store/features/formSlice";
+import { useAppDispatch } from "../../../../../store/store";
 
 const SelectorContainer = ({
   mobile,
@@ -19,6 +21,7 @@ const SelectorContainer = ({
   displayWord: (curr: string, caller: string) => void;
 }) => {
   console.log("WordsContainer Re-Render");
+  const dispatch = useAppDispatch();
 
   const [highlighted, setHighlighted] = useState("");
 
@@ -76,6 +79,7 @@ const SelectorContainer = ({
     displayWord(currWord, caller);
     console.log("focusing on ", caller);
     setHighlighted(caller);
+    dispatch(updateFocusedWord({ word: currWord, caller: caller }));
   };
 
   return (
@@ -93,12 +97,12 @@ const SelectorContainer = ({
             border:
               highlighted === Callers.suggested ||
               highlighted === Callers.unselected
-                ? "solid 1% rgb(50, 50, 50)"
+                ? "solid 2px rgb(50, 50, 50)"
                 : "none",
           }}
         >
           <div style={{ padding: "4%" }}>
-            <b>Uncensored Words</b>
+            <b>KEEP</b>
             <label style={{ float: "right", fontSize: "100%", padding: "1px" }}>
               <input
                 type="checkbox"
@@ -135,14 +139,13 @@ const SelectorContainer = ({
             background: "rgb(70, 70, 70)",
             color: "lightgray",
             border:
-              highlighted === Callers.suggested ||
-              highlighted === Callers.unselected
-                ? "solid 1% rgb(10, 10, 10)"
+              highlighted === Callers.selected
+                ? "solid 2px rgb(50, 50, 50)"
                 : "none",
           }}
         >
           <div style={{ padding: "4%" }}>
-            <b>Censored Words</b>
+            <b>CENSOR</b>
 
             <label
               style={{

@@ -299,17 +299,21 @@ const WordCard = ({ word, caller }: { word: string; caller: string }) => {
                     />
 
                     <div style={{ display: "flex", marginLeft: "auto" }}>
-                      {Callers.unselected ? (
+                      {caller === Callers.unselected ||
+                      caller === Callers.suggested ? (
                         <Button
                           variant="contained"
                           style={{
                             margin: "auto 0",
                             marginLeft: "auto",
-                            fontWeight: "bold",
-                            width: "100%",
                             height: "70%",
                             color: "lightgray",
                             backgroundColor: "rgb(80,80,80)",
+                            visibility:
+                              checkList[word] &&
+                              checkList[word]["timestamps"].length >= 1
+                                ? "visible"
+                                : "hidden",
                           }}
                           // onClick={submit}
                         >
@@ -319,15 +323,20 @@ const WordCard = ({ word, caller }: { word: string; caller: string }) => {
                         <Button
                           variant="contained"
                           style={{
+                            margin: "auto 0",
                             marginLeft: "auto",
-                            fontWeight: "bold",
-                            width: "20%",
+                            height: "70%",
                             color: "lightgray",
                             backgroundColor: "rgb(80,80,80)",
+                            visibility:
+                              checkList[word] &&
+                              checkList[word]["timestamps"].length >= 1
+                                ? "visible"
+                                : "hidden",
                           }}
                           // onClick={submit}
                         >
-                          UNCENSOR
+                          KEEP
                         </Button>
                       )}
                     </div>

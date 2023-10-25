@@ -19,6 +19,11 @@ export interface WordList {
   [index: string]: { timestamps: string[]; caller: string };
 }
 
+export interface WordDetails {
+  word: string;
+  caller: string;
+}
+
 export interface TimestampPayload {
   word: string;
   caller: string;
@@ -32,7 +37,7 @@ export interface WordPayload {
   timestamps: string[];
 }
 
-const initialState: { [x: string]: boolean | WordList } = {
+const initialState: { [x: string]: boolean | WordList | WordDetails } = {
   [componentIDs.fileInput]: true,
   [componentIDs.fileInfo]: false,
   [componentIDs.formSettings]: true,
@@ -47,6 +52,7 @@ const initialState: { [x: string]: boolean | WordList } = {
   unselectedList: {},
   selectedList: {},
   mobile: false,
+  focusedWord: {},
 };
 
 export const formSlice = createSlice({
@@ -258,6 +264,13 @@ export const formSlice = createSlice({
         }
       }
     },
+    updateFocusedWord: (state, { payload }: PayloadAction<WordDetails>) => {
+      state.focusedWord = payload;
+    },
+    resetCheckLists: (state) => {
+      state.unselectedList = {};
+      state.selectedList = {};
+    },
   },
 });
 
@@ -288,4 +301,6 @@ export const {
   intializeMobile,
   updateWord,
   updateTimestamp,
+  updateFocusedWord,
+  resetCheckLists,
 } = formSlice.actions;

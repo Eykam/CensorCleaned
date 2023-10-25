@@ -2,7 +2,10 @@ import React from "react";
 import { Callers } from "./wordCard";
 import { Checkbox } from "@mui/material";
 import { useAppDispatch, useAppSelector } from "../../../../../store/store";
-import { WordList as WL } from "../../../../../store/features/formSlice";
+import {
+  WordList as WL,
+  WordDetails,
+} from "../../../../../store/features/formSlice";
 import { updateWord } from "../../../../../store/features/formSlice";
 
 const WordsList = ({
@@ -20,6 +23,11 @@ const WordsList = ({
   const unselected = useAppSelector((state) => state.data.unselectedWords);
   const selected = useAppSelector((state) => state.data.censorship.censorList);
   const suggested = useAppSelector((state) => state.data.suggestedWords);
+
+  const focusedWord = useAppSelector((state) => {
+    let wordDetails = state.form.focusedWord as WordDetails;
+    if (wordDetails) return wordDetails["word"];
+  });
 
   const checkList = useAppSelector((state) => {
     if (data.caller === Callers.selected) return state.form.selectedList as WL;
@@ -86,6 +94,8 @@ const WordsList = ({
       style={{
         display: "flex",
         padding: "0.5%",
+        background: curr === focusedWord ? "rgb(100,100,100)" : "",
+        borderRadius: "5px",
       }}
       id={curr + "-outer"}
       key={curr + "-outer"}
@@ -93,7 +103,11 @@ const WordsList = ({
       <div
         className="collapsible"
         id={curr + "-collapsible"}
-        style={{ width: "100%", maxWidth: "100%", margin: "auto 0" }}
+        style={{
+          width: "100%",
+          maxWidth: "100%",
+          margin: "auto 0",
+        }}
         onClick={(e) => {
           // e.stopPropagation();
 
