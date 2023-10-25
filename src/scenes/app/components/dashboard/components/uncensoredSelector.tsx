@@ -3,12 +3,17 @@ import { useAppDispatch, useAppSelector } from "../../../../../store/store";
 import "../../../css/wordSelector.css";
 import "../../../css/manualResults.css";
 import {
+  removeUnselectedWords,
+  removeSuggestedWords,
   setUnselectedWords,
   resetWordList,
+  addCensorWords,
 } from "../../../../../store/features/dataSlice";
 import {
+  WordList,
   hideFormSettings,
   showTimestampSubmit,
+  updateTimestamp,
   updateWord,
 } from "../../../../../store/features/formSlice";
 import { FixedSizeList as List } from "react-window";
@@ -43,6 +48,10 @@ const UncensoredSelector = ({
   //============================================================== CONSTANTS & STATES ==============================================================
   const entry = useAppSelector((state) => state.data.unselectedWords);
   const suggestions = useAppSelector((state) => state.data.suggestedWords);
+
+  const checkList = useAppSelector(
+    (state) => state.form.unselectedList as WordList
+  );
   const [searchTerm, setSearchTerm] = useState("");
   const [visibleEntry, setVisibility] = useState(Object.keys(entry));
   const [visibleSuggestion, setSuggestionVisibility] = useState(
@@ -80,215 +89,137 @@ const UncensoredSelector = ({
 
   //============================================================== Functions ==============================================================
 
-  // const selectAllTimes = (curr: string) => {
-  //   const wordOuter = document.getElementById(curr) as HTMLInputElement;
+  const removeAllTimesWord = (
+    caller: string,
+    currWord: string,
+    timestamps: string[]
+  ): boolean => {
+    let data = caller === Callers.suggested ? suggestions : entry;
+    console.log("test print:", timestamps);
+    console.log("test worD:", currWord);
+    console.log("test1:", data);
+    console.log("test2:", data[currWord]);
+    return timestamps.length === data[currWord].length;
+  };
 
-  //   if (entry[curr] !== undefined) {
-  //     entry[curr].forEach((currTimestamp) => {
-  //       const currTimestampCheckbox = document.getElementById(
-  //         curr + "-" + currTimestamp
-  //       ) as HTMLInputElement;
+  const updateStore = (
+    caller: string,
+    word: string,
+    timestamps: string[] | undefined = undefined
+  ) => {
+    if (timestamps) {
+      timestamps.forEach((timestamp) => {
+        let numTimestamp = JSON.parse(timestamp) as number[];
+        if (caller === Callers.suggested) {
+          dispatch(
+            removeSuggestedWords({
+              currWord: word,
+              removeTimestamp: numTimestamp,
+              all: false,
+            })
+          );
+        } else {
+          dispatch(
+            removeUnselectedWords({
+              currWord: word,
+              removeTimestamp: numTimestamp,
+              all: false,
+            })
+          );
+        }
 
-  //       if (wordOuter != null && currTimestampCheckbox != null) {
-  //         if (wordOuter.checked) {
-  //           currTimestampCheckbox.checked = true;
-  //         } else {
-  //           currTimestampCheckbox.checked = false;
-  //         }
-  //       }
-  //     });
-  //   } else if (suggestions[curr] !== undefined) {
-  //     suggestions[curr].forEach((currTimestamp) => {
-  //       const currTimestampCheckbox = document.getElementById(
-  //         curr + "-" + currTimestamp
-  //       ) as HTMLInputElement;
+        dispatch(
+          updateTimestamp({
+            word: word,
+            caller: caller,
+            timestamp: timestamp,
+            remove: true,
+          })
+        );
+      });
+    } else {
+      if (caller === Callers.suggested) {
+        dispatch(
+          removeSuggestedWords({
+            currWord: word,
+            removeTimestamp: [],
+            all: true,
+          })
+        );
+      } else {
+        dispatch(
+          removeUnselectedWords({
+            currWord: word,
+            removeTimestamp: [],
+            all: true,
+          })
+        );
+      }
 
-  //       if (wordOuter != null && currTimestampCheckbox != null) {
-  //         if (wordOuter.checked) {
-  //           currTimestampCheckbox.checked = true;
-  //         } else {
-  //           currTimestampCheckbox.checked = false;
-  //         }
-  //       }
-  //     });
-  //   }
-  // };
+      dispatch(
+        updateWord({
+          word: word,
+          timestamps: [],
+          caller: caller,
+        })
+      );
+    }
+  };
 
-  // const resetSelection = () => {
-  //   Object.keys(entry).forEach((currWord) => {
-  //     const wordInput = document.getElementById(currWord) as HTMLInputElement;
+  const confirmSelection = () => {
+    const selected: { [index: string]: number[][] } = {};
 
-  //     if (wordInput != null) {
-  //       wordInput.checked = false;
-  //     }
+    Object.keys(checkList).forEach((word) => {
+      let timestamps = checkList[word]["timestamps"];
+      let caller = checkList[word]["caller"];
+      let data = caller === Callers.suggested ? suggestions : entry;
 
-  //     selectAllTimes(currWord);
-  //   });
-  // };
+      if (timestamps) {
+        let removeAllTimes = removeAllTimesWord(caller, word, timestamps);
 
-  // const confirmSelection = () => {
-  //   const selected: { [index: string]: number[][] } = {};
+        if (removeAllTimes) {
+          selected[word] = data[word];
+          updateStore(caller, word);
+        } else {
+          let numTimestamps = timestamps.map((timestamp) => {
+            return JSON.parse(timestamp) as number[];
+          });
+          selected[word] = numTimestamps;
+          updateStore(caller, word, timestamps);
+        }
+      }
+    });
 
-  //   Object.keys(entry).forEach((currWord) => {
-  //     const wordCheckbox = document.getElementById(
-  //       currWord
-  //     ) as HTMLInputElement;
-  //     const wordOuter = document.getElementById(
-  //       currWord + "-outer"
-  //     ) as HTMLDivElement;
-
-  //     if (wordCheckbox.checked) {
-  //       selected[currWord] = entry[currWord];
-
-  //       dispatch(
-  //         removeUnselectedWords({
-  //           currWord: currWord,
-  //           removeTimestamp: [],
-  //           all: true,
-  //         })
-  //       );
-  //     } else {
-  //       const selectedTimes: number[][] = [];
-  //       const lengthList = entry[currWord].length;
-  //       const currTimestamps = Object.values(entry[currWord]);
-
-  //       currTimestamps.forEach((currTime) => {
-  //         const currTimeStampInput = document.getElementById(
-  //           currWord + "-" + currTime
-  //         ) as HTMLInputElement;
-
-  //         if (currTimeStampInput != null && currTimeStampInput.checked) {
-  //           selectedTimes.push(currTime);
-
-  //           dispatch(
-  //             removeUnselectedWords({
-  //               currWord: currWord,
-  //               removeTimestamp: currTime,
-  //               all: false,
-  //             })
-  //           );
-  //         }
-  //       });
-
-  //       if (lengthList === selectedTimes.length) {
-  //         const toRemove = document.getElementById(
-  //           currWord + "-outer"
-  //         ) as HTMLDivElement;
-  //         toRemove.style.display = "none";
-  //       }
-
-  //       if (selectedTimes.length > 0) {
-  //         console.log(currWord, " Remaining Times: ", entry[currWord]);
-  //         console.log("Removing: ", selectedTimes);
-  //         selected[currWord] = selectedTimes;
-  //       }
-  //     }
-  //   });
-
-  //   Object.keys(suggestions).forEach((currWord) => {
-  //     const wordCheckbox = document.getElementById(
-  //       currWord
-  //     ) as HTMLInputElement;
-  //     const wordOuter = document.getElementById(
-  //       currWord + "-outer"
-  //     ) as HTMLDivElement;
-
-  //     if (wordCheckbox.checked) {
-  //       selected[currWord] = suggestions[currWord];
-
-  //       dispatch(
-  //         removeSuggestedWords({
-  //           currWord: currWord,
-  //           removeTimestamp: [],
-  //           all: true,
-  //         })
-  //       );
-  //     } else {
-  //       const selectedTimes: number[][] = [];
-  //       const lengthList = suggestions[currWord].length;
-  //       const currTimestamps = Object.values(suggestions[currWord]);
-
-  //       currTimestamps.forEach((currTime) => {
-  //         const currTimeStampInput = document.getElementById(
-  //           currWord + "-" + currTime
-  //         ) as HTMLInputElement;
-
-  //         if (currTimeStampInput != null && currTimeStampInput.checked) {
-  //           selectedTimes.push(currTime);
-
-  //           dispatch(
-  //             removeSuggestedWords({
-  //               currWord: currWord,
-  //               removeTimestamp: currTime,
-  //               all: false,
-  //             })
-  //           );
-  //         }
-  //       });
-
-  //       if (lengthList === selectedTimes.length) {
-  //         const toRemove = document.getElementById(
-  //           currWord + "-outer"
-  //         ) as HTMLDivElement;
-  //         toRemove.style.display = "none";
-  //       }
-
-  //       if (selectedTimes.length > 0) {
-  //         console.log(currWord, " Remaining Times: ", suggestions[currWord]);
-  //         console.log("Removing: ", selectedTimes);
-  //         selected[currWord] = selectedTimes;
-  //       }
-  //     }
-  //   });
-
-  //   const suggestionsExpanded = document.getElementById(
-  //     "suggestions-expanded"
-  //   ) as HTMLDivElement;
-  //   const suggestionsInput = document.getElementById(
-  //     "suggestions-checkbox"
-  //   ) as HTMLInputElement;
-
-  //   if (suggestionsExpanded.style.display !== "none") {
-  //     suggestionsInput.checked = true;
-  //     hideSuggestions();
-  //   }
-
-  //   dispatch(addCensorWords({ entries: selected }));
-  //   resetSelection();
-  // };
+    dispatch(addCensorWords({ entries: selected }));
+  };
 
   const selectAll = (unselect: boolean, caller: string) => {
     let data = caller === Callers.suggested ? suggestions : entry;
+    let visibleWords =
+      caller === Callers.suggested ? visibleSuggestion : visibleEntry;
 
     if (unselect) {
-      let visibleWords = Object.keys(data).filter((word) => {
-        return word.includes(searchTerm);
-      });
-
       visibleWords.forEach((word) => {
         dispatch(
           updateWord({
             word: word,
             timestamps: [],
-            caller: Callers.unselected,
+            caller: caller,
           })
         );
       });
     } else {
       if (data) {
-        let visibleWords = Object.keys(data).filter((word) => {
-          return word.includes(searchTerm);
-        });
-
         visibleWords.forEach((word) => {
           let timestamps = data[word].map((timestamp) => {
             return JSON.stringify(timestamp);
           });
+
           dispatch(
             updateWord({
               word: word,
               timestamps: timestamps,
-              caller: Callers.unselected,
+              caller: caller,
             })
           );
         });
@@ -416,7 +347,7 @@ const UncensoredSelector = ({
                 color: "lightgray",
                 backgroundColor: "rgb(80,80,80)",
               }}
-              // onClick={confirmSelection}
+              onClick={confirmSelection}
             >
               Add
             </Button>

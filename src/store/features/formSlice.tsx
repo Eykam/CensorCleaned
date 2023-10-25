@@ -16,7 +16,7 @@ export const enum componentIDs {
 }
 
 export interface WordList {
-  [index: string]: string[];
+  [index: string]: { timestamps: string[]; caller: string };
 }
 
 export interface TimestampPayload {
@@ -125,8 +125,12 @@ export const formSlice = createSlice({
     },
     updateTimestamp: (state, { payload }: PayloadAction<TimestampPayload>) => {
       if (payload.remove) {
-        if (payload.caller === Callers.unselected) {
-          let timestamps = (state.unselectedList as WordList)[payload.word];
+        if (
+          payload.caller === Callers.unselected ||
+          payload.caller === Callers.suggested
+        ) {
+          let wordInfo = (state.unselectedList as WordList)[payload.word];
+          let timestamps = wordInfo ? wordInfo["timestamps"] : [];
 
           if (
             timestamps &&
@@ -136,20 +140,25 @@ export const formSlice = createSlice({
             delete (state.unselectedList as WordList)[payload.word];
           } else {
             if ((state.unselectedList as WordList)[payload.word]) {
-              (state.unselectedList as WordList)[payload.word] =
+              (state.unselectedList as WordList)[payload.word]["timestamps"] =
                 timestamps.filter(
                   (timestamp) => timestamp !== payload.timestamp
                 );
             }
           }
         } else {
-          let timestamps = (state.selectedList as WordList)[payload.word];
+          let wordInfo = (state.selectedList as WordList)[payload.word];
+          let timestamps = wordInfo ? wordInfo["timestamps"] : [];
 
-          if (timestamps.length === 1 && timestamps[0] === payload.timestamp) {
+          if (
+            timestamps &&
+            timestamps.length === 1 &&
+            timestamps[0] === payload.timestamp
+          ) {
             delete (state.selectedList as WordList)[payload.word];
           } else {
             if ((state.selectedList as WordList)[payload.word]) {
-              (state.selectedList as WordList)[payload.word] =
+              (state.selectedList as WordList)[payload.word]["timestamps"] =
                 timestamps.filter(
                   (timestamp) => timestamp !== payload.timestamp
                 );
@@ -157,29 +166,48 @@ export const formSlice = createSlice({
           }
         }
       } else {
-        if (payload.caller === Callers.unselected) {
-          if ((state.unselectedList as WordList)[payload.word]) {
-            let tempArr = (state.unselectedList as WordList)[payload.word];
+        if (
+          payload.caller === Callers.unselected ||
+          payload.caller === Callers.suggested
+        ) {
+          if (
+            (state.unselectedList as WordList)[payload.word] &&
+            (state.unselectedList as WordList)[payload.word]["timestamps"]
+          ) {
+            let tempArr = (state.unselectedList as WordList)[payload.word][
+              "timestamps"
+            ];
             let tempSet = new Set(tempArr);
             tempSet.add(payload.timestamp);
 
-            (state.unselectedList as WordList)[payload.word] = [...tempSet];
-          } else {
-            (state.unselectedList as WordList)[payload.word] = [
-              payload.timestamp,
+            (state.unselectedList as WordList)[payload.word]["timestamps"] = [
+              ...tempSet,
             ];
+          } else {
+            (state.unselectedList as WordList)[payload.word] = {
+              timestamps: [payload.timestamp],
+              caller: payload.caller,
+            };
           }
         } else {
-          if ((state.selectedList as WordList)[payload.word]) {
-            let tempArr = (state.selectedList as WordList)[payload.word];
+          if (
+            (state.selectedList as WordList)[payload.word] &&
+            (state.selectedList as WordList)[payload.word]["timestamps"]
+          ) {
+            let tempArr = (state.selectedList as WordList)[payload.word][
+              "timestamps"
+            ];
             let tempSet = new Set(tempArr);
             tempSet.add(payload.timestamp);
 
-            (state.unselectedList as WordList)[payload.word] = [...tempSet];
-          } else {
-            (state.selectedList as WordList)[payload.word] = [
-              payload.timestamp,
+            (state.selectedList as WordList)[payload.word]["timestamps"] = [
+              ...tempSet,
             ];
+          } else {
+            (state.selectedList as WordList)[payload.word] = {
+              timestamps: [payload.timestamp],
+              caller: payload.caller,
+            };
           }
         }
       }
@@ -193,25 +221,40 @@ export const formSlice = createSlice({
           delete (state.unselectedList as WordList)[payload.word];
         } else {
           if ((state.unselectedList as WordList)[payload.word]) {
-            let tempArr = (state.unselectedList as WordList)[payload.word];
+            let tempArr = (state.unselectedList as WordList)[payload.word][
+              "timestamps"
+            ];
             let tempSet = new Set([...tempArr, ...payload.timestamps]);
 
-            (state.unselectedList as WordList)[payload.word] = [...tempSet];
+            (state.unselectedList as WordList)[payload.word]["timestamps"] = [
+              ...tempSet,
+            ];
           } else {
-            (state.unselectedList as WordList)[payload.word] =
-              payload.timestamps;
+            (state.unselectedList as WordList)[payload.word] = {
+              timestamps: payload.timestamps,
+              caller: payload.caller,
+            };
           }
         }
       } else {
         if (payload.timestamps.length === 0) {
           delete (state.selectedList as WordList)[payload.word];
         } else {
-          payload.timestamps.forEach((timestamp) => {
-            if ((state.selectedList as WordList)[payload.word])
-              (state.selectedList as WordList)[payload.word].push(timestamp);
-            else
-              (state.selectedList as WordList)[payload.word] = [payload.word];
-          });
+          if ((state.selectedList as WordList)[payload.word]) {
+            let tempArr = (state.selectedList as WordList)[payload.word][
+              "timestamps"
+            ];
+            let tempSet = new Set([...tempArr, ...payload.timestamps]);
+
+            (state.selectedList as WordList)[payload.word]["timestamps"] = [
+              ...tempSet,
+            ];
+          } else {
+            (state.selectedList as WordList)[payload.word] = {
+              timestamps: payload.timestamps,
+              caller: payload.caller,
+            };
+          }
         }
       }
     },

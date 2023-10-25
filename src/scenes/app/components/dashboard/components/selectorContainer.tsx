@@ -20,7 +20,7 @@ const SelectorContainer = ({
 }) => {
   console.log("WordsContainer Re-Render");
 
-  const [highlighted, setHighlighted] = useState(Callers.unselected);
+  const [highlighted, setHighlighted] = useState("");
 
   const hideWordSelectors = (container: string) => {
     if (container === "transcribed") {
@@ -134,6 +134,11 @@ const SelectorContainer = ({
             padding: "0",
             background: "rgb(70, 70, 70)",
             color: "lightgray",
+            border:
+              highlighted === Callers.suggested ||
+              highlighted === Callers.unselected
+                ? "solid 1% rgb(10, 10, 10)"
+                : "none",
           }}
         >
           <div style={{ padding: "4%" }}>

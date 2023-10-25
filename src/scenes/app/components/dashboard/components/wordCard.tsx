@@ -6,9 +6,11 @@ import {
   Typography,
   Button,
   Checkbox,
+  IconButton,
 } from "@mui/material";
 import { WordList } from "../../../../../store/features/formSlice";
 import { updateTimestamp } from "../../../../../store/features/formSlice";
+import SmartDisplayIcon from "@mui/icons-material/SmartDisplay";
 
 export const Callers = {
   unselected: "unselected",
@@ -121,7 +123,8 @@ const WordCard = ({ word, caller }: { word: string; caller: string }) => {
   };
 
   const checked = (timestamp: string) => {
-    if (checkList[word]) return checkList[word].includes(timestamp);
+    if (checkList[word])
+      return checkList[word]["timestamps"].includes(timestamp);
     return false;
   };
 
@@ -129,7 +132,7 @@ const WordCard = ({ word, caller }: { word: string; caller: string }) => {
     dispatch(
       updateTimestamp({
         word: word,
-        caller: caller === Callers.suggested ? Callers.unselected : caller,
+        caller: caller,
         timestamp: timestamp,
         remove: checked,
       })
@@ -162,7 +165,7 @@ const WordCard = ({ word, caller }: { word: string; caller: string }) => {
       return (
         <div
           className="expanded"
-          id={curr + "-expand"}
+          // id={curr + "-expand"}
           style={{
             display: "flex",
             flexDirection: "column",
@@ -179,25 +182,9 @@ const WordCard = ({ word, caller }: { word: string; caller: string }) => {
                   width: "100%",
                   paddingRight: "0%",
                 }}
-                id={curr + "-" + time + "-outer"}
+                // id={curr + "-" + time + "-outer"}
                 key={curr + "-" + time + "-outer"}
-                // onClick={(e) => {
-                //   e.stopPropagation();
-                //   selectTimestamp(curr, time.toString());
-                // }}
               >
-                {/* <input
-                  type="checkbox"
-                  id={curr + "-" + time}
-                  name={curr + "-" + time}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const checked: boolean = (e.target as HTMLInputElement)
-                      .checked;
-                    uncheckWord(checked, curr);
-                  }}
-                /> */}
-
                 <Checkbox
                   size="small"
                   sx={{
@@ -218,15 +205,23 @@ const WordCard = ({ word, caller }: { word: string; caller: string }) => {
                 />
 
                 {printTimeStamp(time)}
-                <button
+
+                <IconButton
                   onClick={(e) => {
                     e.stopPropagation();
                     playClip(time[0], time[1]);
                   }}
-                  style={{ float: "right", borderRadius: "7px" }}
+                  aria-label={"play-clip-button-for" + word + "-" + time}
+                  style={{
+                    float: "right",
+                    margin: "0",
+                    padding: "0",
+                    color: "lightgray",
+                  }}
+                  sx={{ "&:hover": { color: "rgb(150,150,150)" } }}
                 >
-                  &#9658;
-                </button>
+                  <SmartDisplayIcon />
+                </IconButton>
               </div>
             );
           })}

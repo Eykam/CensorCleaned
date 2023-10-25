@@ -20,182 +20,38 @@ const CensoredSelector = ({
   const dispatch = useAppDispatch();
 
   const entry = useAppSelector((state) => {
-    if (state.data.censorship.censorList)
-      return state.data.censorship.censorList;
-    else return {};
+    return state.data.censorship.censorList;
   });
+
   const originalSuggestedWords = useAppSelector(
     (state) => state.data.originalSuggestedWords
   );
 
+  const checkList = useAppSelector((state) => state.form.selectedList);
   const [searchTerm, setSearchTerm] = useState("");
-  const [visibleEntry, setVisibility] = useState(Object.keys(entry));
+  const [visibleEntry, setVisibility] = useState(
+    entry ? Object.keys(entry) : []
+  );
 
   useEffect(() => {
     const search = async (term: string) => {
+      let data = entry ? Object.keys(entry) : [];
       if (term !== "") {
-        setVisibility(Object.keys(entry).filter((word) => word.includes(term)));
+        setVisibility(data.filter((word) => word.includes(term)));
       } else {
-        setVisibility(Object.keys(entry));
+        setVisibility(data);
       }
     };
 
     search(searchTerm);
   }, [entry, searchTerm]);
+
   // const checkSmaller = () => {
   //   return window.innerWidth <= 1500;
   // };
 
   // const checkBrowser = () => {
   //   return window.matchMedia("(max-width: 767px)").matches;
-  // };
-
-  // const expand = (curr: string) => {
-  //   const currExpander = document.getElementById(
-  //     curr + "-expand-selected"
-  //   ) as HTMLDivElement;
-  //   const currToggle = document.getElementById(
-  //     curr + "-checkbox-selected"
-  //   ) as HTMLInputElement;
-  //   const currShowButton = document.getElementById(
-  //     curr + "-show-selected"
-  //   ) as HTMLSpanElement;
-
-  //   if (currExpander && currShowButton && currToggle.checked === true) {
-  //     currExpander.style.display = "block";
-  //     currShowButton.innerText = "[-]";
-  //   } else {
-  //     currExpander.style.display = "none";
-  //     currShowButton.innerText = "[+]";
-  //   }
-  // };
-
-  // const search = () => {
-  //   const searchTerm = (
-  //     document.getElementById("search-bar-selected") as HTMLInputElement
-  //   ).value;
-
-  //   console.log('Search Value: "', searchTerm, '"');
-
-  //   if (entry != null) {
-  //     Object.keys(entry).forEach((curr) => {
-  //       const currContainer = document.getElementById(curr + "-outer-selected");
-
-  //       if (currContainer != null) {
-  //         if (searchTerm === "") {
-  //           currContainer.style.display = "flex";
-  //         }
-
-  //         if (!curr.toLocaleLowerCase().includes(searchTerm.toLowerCase())) {
-  //           currContainer.style.display = "none";
-  //         } else {
-  //           currContainer.style.display = "flex";
-  //         }
-  //       }
-  //     });
-  //   }
-  // };
-
-  // const printTimeStamp = (seconds: number[]): string => {
-  //   let updatedTimestamps: string[] | null = null;
-
-  //   seconds.forEach((currSeconds) => {
-  //     const minutes = Math.floor(currSeconds / 60);
-  //     const remainingSeconds = Math.floor(currSeconds - minutes * 60);
-
-  //     if (updatedTimestamps == null) {
-  //       updatedTimestamps = [
-  //         String(minutes).padStart(2, "0") +
-  //           ":" +
-  //           String(remainingSeconds).padStart(2, "0"),
-  //       ];
-  //     } else {
-  //       updatedTimestamps.push(
-  //         String(minutes).padStart(2, "0") +
-  //           ":" +
-  //           String(remainingSeconds).padStart(2, "0")
-  //       );
-  //     }
-  //   });
-
-  //   if (updatedTimestamps)
-  //     return updatedTimestamps[0] + " - " + updatedTimestamps[1];
-
-  //   return "";
-  // };
-
-  // const selectAllTimes = (curr: string) => {
-  //   const wordOuter = document.getElementById(
-  //     curr + "-selected"
-  //   ) as HTMLInputElement;
-
-  //   if (entry != null) {
-  //     entry[curr].forEach((currTimestamp) => {
-  //       const currTimestampCheckbox = document.getElementById(
-  //         curr + "-" + currTimestamp + "-selected"
-  //       ) as HTMLInputElement;
-
-  //       if (wordOuter != null && currTimestampCheckbox != null) {
-  //         if (wordOuter.checked) {
-  //           currTimestampCheckbox.checked = true;
-  //         } else {
-  //           currTimestampCheckbox.checked = false;
-  //         }
-  //       }
-  //     });
-  //   }
-  // };
-
-  // const resetSelection = () => {
-  //   if (entry !== null && entry !== undefined) {
-  //     Object.keys(entry).forEach((currWord) => {
-  //       const wordInput = document.getElementById(
-  //         currWord + "-selected"
-  //       ) as HTMLInputElement;
-
-  //       if (wordInput != null) {
-  //         wordInput.checked = false;
-  //       }
-
-  //       selectAllTimes(currWord);
-  //     });
-  //   }
-  // };
-
-  // const playClip = (start: number, end: number) => {
-  //   try {
-  //     const videoPlayer = document.getElementsByTagName(
-  //       "video"
-  //     )[0] as HTMLVideoElement;
-
-  //     const audioPlayer = document.getElementsByTagName(
-  //       "audio"
-  //     )[0] as HTMLAudioElement;
-
-  //     const player = videoPlayer !== undefined ? videoPlayer : audioPlayer!;
-
-  //     function checkTime() {
-  //       if (player.currentTime >= end + 0.25) {
-  //         player.pause();
-  //       } else {
-  //         /* call checkTime every 1/10th
-  //               second until endTime */
-  //         setTimeout(checkTime, 100);
-  //       }
-  //     }
-
-  //     /* stop if playing (otherwise ignored) */
-  //     player.pause();
-  //     /* set video start time */
-  //     player.currentTime = start - 0.25;
-  //     /* play video */
-  //     player.play();
-  //     /* check the current time and
-  //        pause IF/WHEN endTime is reached */
-  //     checkTime();
-  //   } catch (e) {
-  //     console.log("Error playing clip: ", (e as Error).message);
-  //   }
   // };
 
   // const confirmSelection = () => {
@@ -276,69 +132,114 @@ const CensoredSelector = ({
   //   }
   // };
 
-  // const uncheckWord = (checked: boolean, currWord: string) => {
-  //   if (!checked) {
-  //     const wordInput = document.getElementById(
-  //       currWord + "-selected"
-  //     ) as HTMLInputElement;
-  //     wordInput.checked = false;
-  //   }
-  // };
-
-  // const selectAll = (checked: boolean) => {
-  //   if (entry != null && entry !== undefined) {
-  //     const searchTerm = (
-  //       document.getElementById("search-bar-selected") as HTMLInputElement
-  //     ).value;
-
-  //     Object.keys(entry).forEach((currWord) => {
-  //       const wordInput = document.getElementById(
-  //         currWord + "-selected"
-  //       ) as HTMLInputElement;
-
-  //       if (wordInput != null) {
-  //         if (searchTerm !== undefined && searchTerm !== "") {
-  //           if (currWord.includes(searchTerm.toLowerCase()))
-  //             wordInput.checked = checked;
-  //         } else {
-  //           wordInput.checked = checked;
-  //         }
-  //       }
-  //     });
-  //   }
-  // };
-
   // const checkInSuggestedWords = (word: string): boolean => {
   //   if (originalSuggestedWords[word] === undefined) return false;
   //   else return true;
   // };
+  const removeAllTimesWord = (word: string, timestamps: string[]): boolean => {
+    let data = entry || {};
+    console.log("test print:", timestamps);
+    console.log("test worD:", word);
+    console.log("test1:", data);
+    console.log("test2:", data[word]);
+    return timestamps.length === data[word].length;
+  };
 
-  // const expandDiv = (curr: string) => {
-  //   const currWordExpander = document.getElementById(
-  //     curr + "-checkbox-selected"
-  //   ) as HTMLInputElement;
+  const updateStore = (
+    word: string,
+    timestamps: string[] | undefined = undefined
+  ) => {
+    if (timestamps) {
+      timestamps.forEach((timestamp) => {
+        let numTimestamp = JSON.parse(timestamp) as number[];
+        if (caller === Callers.suggested) {
+          dispatch(
+            removeSuggestedWords({
+              currWord: word,
+              removeTimestamp: numTimestamp,
+              all: false,
+            })
+          );
+        } else {
+          dispatch(
+            removeUnselectedWords({
+              currWord: word,
+              removeTimestamp: numTimestamp,
+              all: false,
+            })
+          );
+        }
 
-  //   currWordExpander.checked = !currWordExpander.checked;
-  //   expand(curr);
-  // };
+        dispatch(
+          updateTimestamp({
+            word: word,
+            caller: caller,
+            timestamp: timestamp,
+            remove: true,
+          })
+        );
+      });
+    } else {
+      if (caller === Callers.suggested) {
+        dispatch(
+          removeSuggestedWords({
+            currWord: word,
+            removeTimestamp: [],
+            all: true,
+          })
+        );
+      } else {
+        dispatch(
+          removeUnselectedWords({
+            currWord: word,
+            removeTimestamp: [],
+            all: true,
+          })
+        );
+      }
 
-  // const selectTimestamp = (curr: string, time: string) => {
-  //   const currTimestampCheckbox = document.getElementById(
-  //     curr + "-" + time + "-selected"
-  //   ) as HTMLInputElement;
+      dispatch(
+        updateWord({
+          word: word,
+          timestamps: [],
+          caller: caller,
+        })
+      );
+    }
+  };
 
-  //   currTimestampCheckbox.checked = !currTimestampCheckbox.checked;
-  //   uncheckWord(currTimestampCheckbox.checked, curr);
-  // };
+  const confirmSelection = () => {
+    const selected: { [index: string]: number[][] } = {};
+
+    Object.keys(checkList).forEach((word) => {
+      let timestamps = checkList[word]["timestamps"];
+      let caller = checkList[word]["caller"];
+      let data = caller === Callers.suggested ? suggestions : entry;
+
+      if (timestamps) {
+        let removeAllTimes = removeAllTimesWord(caller, word, timestamps);
+
+        if (removeAllTimes) {
+          selected[word] = data[word];
+          updateStore(caller, word);
+        } else {
+          let numTimestamps = timestamps.map((timestamp) => {
+            return JSON.parse(timestamp) as number[];
+          });
+          selected[word] = numTimestamps;
+          updateStore(caller, word, timestamps);
+        }
+      }
+    });
+
+    dispatch(addCensorWords({ entries: selected }));
+  };
+
   const selectAll = (unselect: boolean) => {
-    let data = entry;
+    let data = entry ? entry : {};
 
     if (unselect) {
-      let visibleWords = Object.keys(data).filter((word) => {
-        return word.includes(searchTerm);
-      });
-
-      visibleWords.forEach((word) => {
+      visibleEntry.forEach((word) => {
         dispatch(
           updateWord({
             word: word,
@@ -349,14 +250,11 @@ const CensoredSelector = ({
       });
     } else {
       if (data) {
-        let visibleWords = Object.keys(data).filter((word) => {
-          return word.includes(searchTerm);
-        });
-
-        visibleWords.forEach((word) => {
+        visibleEntry.forEach((word) => {
           let timestamps = data[word].map((timestamp) => {
             return JSON.stringify(timestamp);
           });
+
           dispatch(
             updateWord({
               word: word,
@@ -459,15 +357,19 @@ const CensoredSelector = ({
       />
 
       <div id="unselected-outer" style={{}}>
-        <List
-          height={300}
-          width={"100%"}
-          itemCount={visibleEntry.length}
-          itemSize={25}
-          itemData={{ list: visibleEntry, caller: Callers.selected }}
-        >
-          {rows}
-        </List>
+        {visibleEntry.length > 0 ? (
+          <List
+            height={300}
+            width={"100%"}
+            itemCount={visibleEntry.length}
+            itemSize={25}
+            itemData={{ list: visibleEntry, caller: Callers.selected }}
+          >
+            {rows}
+          </List>
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );
