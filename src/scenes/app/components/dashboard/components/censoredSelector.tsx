@@ -59,10 +59,7 @@ const CensoredSelector = ({
 
   const removeAllTimesWord = (word: string, timestamps: string[]): boolean => {
     let data = entry || {};
-    console.log("test print:", timestamps);
-    console.log("test worD:", word);
-    console.log("test1:", data);
-    console.log("test2:", data[word]);
+
     return timestamps.length === data[word].length;
   };
 
@@ -209,7 +206,7 @@ const CensoredSelector = ({
           type="text"
           placeholder="Search Here"
           style={{
-            paddingTop: "2% 0",
+            paddingTop: "2%",
             paddingBottom: "2%",
             marginTop: "2%",
             marginBottom: "2%",
@@ -233,9 +230,8 @@ const CensoredSelector = ({
         >
           <Button
             variant="contained"
+            disabled={Object.keys(checkList).length >= 1 ? false : true}
             style={{
-              display:
-                Object.keys(checkList).length >= 1 ? "inline-block" : "none",
               margin: "0",
               marginLeft: "auto",
               padding: "2%",
@@ -278,7 +274,20 @@ const CensoredSelector = ({
             {rows}
           </List>
         ) : (
-          <></>
+          <div
+            style={{
+              height: 290,
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              textAlign: "center",
+              justifyContent: "center",
+              color: "rgb(110,110,110)",
+            }}
+          >
+            {" "}
+            None{" "}
+          </div>
         )}
       </div>
     </div>

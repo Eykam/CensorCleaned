@@ -3,10 +3,7 @@ import { FileUpload } from "../../../../store/features/fileSlice";
 
 const VideoCard = ({ file }: { file: FileUpload | null }) => {
   return (
-    <div
-      id="uploaded-content"
-      style={{ height: "100%", display: "flex", alignItems: "end" }}
-    >
+    <div id="uploaded-content" style={{ display: "flex", alignItems: "end" }}>
       {file && file.fileType.includes("audio") ? (
         <audio
           controls

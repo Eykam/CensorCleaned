@@ -26,7 +26,7 @@ const WordsList = ({
 
   const focusedWord = useAppSelector((state) => {
     let wordDetails = state.form.focusedWord as WordDetails;
-    if (wordDetails) return wordDetails["word"];
+    return wordDetails;
   });
 
   const checkList = useAppSelector((state) => {
@@ -94,7 +94,10 @@ const WordsList = ({
       style={{
         display: "flex",
         padding: "0.5%",
-        background: curr === focusedWord ? "rgb(100,100,100)" : "",
+        background:
+          curr === focusedWord.word && data.caller === focusedWord.caller
+            ? "rgb(100,100,100)"
+            : "",
         borderRadius: "5px",
       }}
       id={curr + "-outer"}
@@ -111,7 +114,7 @@ const WordsList = ({
         onClick={(e) => {
           // e.stopPropagation();
 
-          displayWord(curr, data.caller);
+          if (displayWord) displayWord(curr, data.caller);
         }}
       >
         <div

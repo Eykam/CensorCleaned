@@ -226,43 +226,28 @@ export const formSlice = createSlice({
         if (payload.timestamps.length === 0) {
           delete (state.unselectedList as WordList)[payload.word];
         } else {
-          if ((state.unselectedList as WordList)[payload.word]) {
-            let tempArr = (state.unselectedList as WordList)[payload.word][
-              "timestamps"
-            ];
-            let tempSet = new Set([...tempArr, ...payload.timestamps]);
-
-            (state.unselectedList as WordList)[payload.word]["timestamps"] = [
-              ...tempSet,
-            ];
-          } else {
-            (state.unselectedList as WordList)[payload.word] = {
-              timestamps: payload.timestamps,
-              caller: payload.caller,
-            };
-          }
+          (state.unselectedList as WordList)[payload.word] = {
+            timestamps: payload.timestamps,
+            caller: payload.caller,
+          };
         }
       } else {
         if (payload.timestamps.length === 0) {
           delete (state.selectedList as WordList)[payload.word];
         } else {
-          if ((state.selectedList as WordList)[payload.word]) {
-            let tempArr = (state.selectedList as WordList)[payload.word][
-              "timestamps"
-            ];
-            let tempSet = new Set([...tempArr, ...payload.timestamps]);
-
-            (state.selectedList as WordList)[payload.word]["timestamps"] = [
-              ...tempSet,
-            ];
-          } else {
-            (state.selectedList as WordList)[payload.word] = {
-              timestamps: payload.timestamps,
-              caller: payload.caller,
-            };
-          }
+          (state.selectedList as WordList)[payload.word] = {
+            timestamps: payload.timestamps,
+            caller: payload.caller,
+          };
         }
       }
+    },
+    selectAllWords: (state, { payload }: PayloadAction<{ caller: string }>) => {
+      let data = (
+        payload.caller === Callers.selected
+          ? state.unselectedList
+          : state.selectedList
+      ) as WordList;
     },
     updateFocusedWord: (state, { payload }: PayloadAction<WordDetails>) => {
       state.focusedWord = payload;

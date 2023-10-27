@@ -9,8 +9,19 @@ import {
   IconButton,
 } from "@mui/material";
 import { WordList } from "../../../../../store/features/formSlice";
-import { updateTimestamp } from "../../../../../store/features/formSlice";
+import {
+  updateTimestamp,
+  updateWord,
+} from "../../../../../store/features/formSlice";
 import SmartDisplayIcon from "@mui/icons-material/SmartDisplay";
+import {
+  addSuggestedWords,
+  addUnselectedWords,
+  addCensorWords,
+  removeSelectedWords,
+  removeSuggestedWords,
+  removeUnselectedWords,
+} from "../../../../../store/features/dataSlice";
 
 export const Callers = {
   unselected: "unselected",
@@ -28,6 +39,9 @@ const WordCard = ({ word, caller }: { word: string; caller: string }) => {
   const unselected = useAppSelector((state) => state.data.unselectedWords);
   const selected = useAppSelector((state) => state.data.censorship.censorList);
   const suggested = useAppSelector((state) => state.data.suggestedWords);
+  const originalSuggestedWords = useAppSelector(
+    (state) => state.data.originalSuggestedWords
+  );
 
   const checkList = useAppSelector((state) => {
     if (caller === Callers.suggested || caller === Callers.unselected)
@@ -109,7 +123,7 @@ const WordCard = ({ word, caller }: { word: string; caller: string }) => {
         ? unselected
         : selected;
 
-    return entry;
+    return entry || {};
   };
 
   const getCount = (curr: string) => {
@@ -157,6 +171,184 @@ const WordCard = ({ word, caller }: { word: string; caller: string }) => {
     }
   };
 
+  const removeAllTimesWord = (timestamps: string[]): boolean => {
+    let data = getDataSource();
+
+    return timestamps.length === data[word].length;
+  };
+
+  const updateStoreUnselected = (
+    timestamps: string[] | undefined = undefined
+  ) => {
+    if (timestamps) {
+      timestamps.forEach((timestamp) => {
+        let numTimestamp = JSON.parse(timestamp) as number[];
+        if (caller === Callers.suggested) {
+          dispatch(
+            removeSuggestedWords({
+              currWord: word,
+              removeTimestamp: numTimestamp,
+              all: false,
+            })
+          );
+        } else {
+          dispatch(
+            removeUnselectedWords({
+              currWord: word,
+              removeTimestamp: numTimestamp,
+              all: false,
+            })
+          );
+        }
+
+        dispatch(
+          updateTimestamp({
+            word: word,
+            caller: caller,
+            timestamp: timestamp,
+            remove: true,
+          })
+        );
+      });
+    } else {
+      if (caller === Callers.suggested) {
+        dispatch(
+          removeSuggestedWords({
+            currWord: word,
+            removeTimestamp: [],
+            all: true,
+          })
+        );
+      } else {
+        dispatch(
+          removeUnselectedWords({
+            currWord: word,
+            removeTimestamp: [],
+            all: true,
+          })
+        );
+      }
+
+      dispatch(
+        updateWord({
+          word: word,
+          timestamps: [],
+          caller: caller,
+        })
+      );
+    }
+  };
+
+  const censor = () => {
+    const selected: { [index: string]: number[][] } = {};
+
+    let timestamps = checkList[word]["timestamps"];
+    let caller = checkList[word]["caller"];
+    let data = getDataSource();
+
+    if (timestamps) {
+      let removeAllTimes = removeAllTimesWord(timestamps);
+
+      if (removeAllTimes) {
+        selected[word] = data[word];
+        updateStoreUnselected();
+      } else {
+        let numTimestamps = timestamps.map((timestamp) => {
+          return JSON.parse(timestamp) as number[];
+        });
+        selected[word] = numTimestamps;
+        updateStoreUnselected(timestamps);
+      }
+    }
+
+    dispatch(addCensorWords({ entries: selected }));
+  };
+
+  const updateStoreSelected = (
+    caller: string,
+    word: string,
+    timestamps: string[] | undefined = undefined
+  ) => {
+    if (timestamps) {
+      timestamps.forEach((timestamp) => {
+        let numTimestamp = JSON.parse(timestamp) as number[];
+
+        dispatch(
+          removeSelectedWords({
+            currWord: word,
+            removeTimestamp: numTimestamp,
+            all: false,
+          })
+        );
+
+        dispatch(
+          updateTimestamp({
+            word: word,
+            caller: caller,
+            timestamp: timestamp,
+            remove: true,
+          })
+        );
+      });
+    } else {
+      dispatch(
+        removeSelectedWords({
+          currWord: word,
+          removeTimestamp: [],
+          all: true,
+        })
+      );
+    }
+
+    dispatch(
+      updateWord({
+        word: word,
+        timestamps: [],
+        caller: caller,
+      })
+    );
+  };
+
+  const checkInSuggestedWords = (word: string): boolean => {
+    if (originalSuggestedWords[word] === undefined) return false;
+    else return true;
+  };
+
+  const keep = () => {
+    const sendToSuggested: { [index: string]: number[][] } = {};
+    const sendToUnselected: { [index: string]: number[][] } = {};
+
+    Object.keys(checkList).forEach((word) => {
+      let timestamps = checkList[word]["timestamps"];
+      let caller = Callers.selected;
+      let data = getDataSource();
+
+      if (timestamps) {
+        let removeAllTimes = removeAllTimesWord(timestamps);
+
+        if (removeAllTimes) {
+          if (checkInSuggestedWords(word)) sendToSuggested[word] = data[word];
+          else sendToUnselected[word] = data[word];
+
+          updateStoreSelected(caller, word);
+        } else {
+          let numTimestamps = timestamps.map((timestamp) => {
+            return JSON.parse(timestamp) as number[];
+          });
+
+          if (checkInSuggestedWords(word))
+            sendToSuggested[word] = numTimestamps;
+          else sendToUnselected[word] = numTimestamps;
+
+          updateStoreSelected(caller, word, timestamps);
+        }
+      }
+    });
+
+    dispatch(addUnselectedWords({ entries: sendToUnselected }));
+    dispatch(addSuggestedWords({ entries: sendToSuggested }));
+  };
+
   const timestampComponent = (curr: string) => {
     let entry = getDataSource();
 
@@ -173,7 +365,7 @@ const WordCard = ({ word, caller }: { word: string; caller: string }) => {
             justifyContent: "space-between",
           }}
         >
-          {entry[curr].map((time) => {
+          {entry[curr].map((time, index) => {
             return (
               <div
                 className="timestamp-shell"
@@ -183,7 +375,7 @@ const WordCard = ({ word, caller }: { word: string; caller: string }) => {
                   paddingRight: "0%",
                 }}
                 // id={curr + "-" + time + "-outer"}
-                key={curr + "-" + time + "-outer"}
+                key={curr + "-" + time + "-" + index + "-outer"}
               >
                 <Checkbox
                   size="small"
@@ -194,8 +386,8 @@ const WordCard = ({ word, caller }: { word: string; caller: string }) => {
                     },
                   }}
                   style={{ margin: "0", padding: "0" }}
-                  id={curr + "-" + time}
-                  name={curr + "-" + time}
+                  id={curr + "-" + time + "-" + index}
+                  name={curr + "-" + time + "-" + index}
                   defaultChecked={false}
                   checked={checked(JSON.stringify(time))}
                   onClick={(e) => {
@@ -245,9 +437,10 @@ const WordCard = ({ word, caller }: { word: string; caller: string }) => {
             height: "100%",
             justifyContent: "center",
             alignItems: "center",
+            color: "gray",
           }}
         >
-          SELECT A WORD{" "}
+          <b>SELECT A WORD </b>
         </div>
       ) : (
         <div style={{ padding: "2%" }}>
@@ -315,7 +508,7 @@ const WordCard = ({ word, caller }: { word: string; caller: string }) => {
                                 ? "visible"
                                 : "hidden",
                           }}
-                          // onClick={submit}
+                          onClick={censor}
                         >
                           CENSOR
                         </Button>
@@ -334,7 +527,7 @@ const WordCard = ({ word, caller }: { word: string; caller: string }) => {
                                 ? "visible"
                                 : "hidden",
                           }}
-                          // onClick={submit}
+                          onClick={keep}
                         >
                           KEEP
                         </Button>
@@ -347,8 +540,8 @@ const WordCard = ({ word, caller }: { word: string; caller: string }) => {
                       margin: "0%",
                       marginRight: "4%",
                       padding: "2%",
-                      maxHeight: "8vh",
-                      height: "8vh",
+                      maxHeight: "7vh",
+                      height: "7vh",
                       borderRadius: "5px",
                       overflow: "hidden",
                       overflowY: "scroll",

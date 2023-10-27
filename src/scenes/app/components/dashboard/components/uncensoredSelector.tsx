@@ -291,7 +291,7 @@ const UncensoredSelector = ({
           justifyContent: "space-between",
         }}
       >
-        <div style={{ display: "block" }}>
+        <div style={{ display: "flex", width: "100%" }}>
           <input
             id="search-bar"
             type="text"
@@ -313,11 +313,12 @@ const UncensoredSelector = ({
 
           <div
             style={{
-              display: "inline-flex",
-              maxHeight: "100%",
+              display: "flex",
+              // maxHeight: "100%",
               marginTop: "2%",
               marginBottom: "2%",
-              width: "45%",
+              // width: "50%",
+              marginLeft: "auto",
             }}
           >
             <Button
@@ -325,6 +326,7 @@ const UncensoredSelector = ({
               style={{
                 padding: "2%",
                 color: "lightgray",
+                marginRight: "4%",
                 backgroundColor: "rgb(80,80,80)",
               }}
               onClick={reset}
@@ -334,9 +336,8 @@ const UncensoredSelector = ({
 
             <Button
               variant="contained"
+              disabled={Object.keys(checkList).length >= 1 ? false : true}
               style={{
-                visibility:
-                  Object.keys(checkList).length >= 1 ? "visible" : "hidden",
                 margin: "0",
                 padding: "2%",
                 color: "lightgray",
@@ -413,7 +414,7 @@ const UncensoredSelector = ({
         >
           {Object.keys(suggestions).length > 0 ? (
             <List
-              height={suggestionsHidden ? 0 : 100}
+              height={suggestionsHidden ? 0 : 90}
               width={"100%"}
               itemCount={visibleSuggestion.length}
               itemSize={25}
@@ -427,7 +428,7 @@ const UncensoredSelector = ({
           ) : (
             <div
               style={{
-                height: 100,
+                height: 90,
                 width: "100%",
                 display: "flex",
                 flexDirection: "column",
@@ -443,7 +444,7 @@ const UncensoredSelector = ({
         </div>
       </Paper>
 
-      <Checkbox
+      {/* <Checkbox
         size="small"
         sx={{
           color: "rgb(200,200,200)",
@@ -457,18 +458,18 @@ const UncensoredSelector = ({
           let checked = (e.target as HTMLInputElement).checked;
           selectAll(!checked, Callers.unselected);
         }}
-      />
+      /> */}
 
       <div id="unselected-outer" style={{}}>
         <List
           height={
             checkBrowser()
               ? suggestionsHidden
-                ? 200
-                : 100
+                ? 220
+                : 120
               : suggestionsHidden
-              ? 250
-              : 150
+              ? 260
+              : 170
           }
           width={"100%"}
           itemCount={visibleEntry.length}

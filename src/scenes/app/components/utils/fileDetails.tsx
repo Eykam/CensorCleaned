@@ -8,7 +8,10 @@ const FileDetails = ({ file }: { file: FileUpload | null }) => {
       <h3 style={{ marginTop: "0" }}>Submission Details</h3>
 
       <p>
-        <b>File Name:</b> {file?.fileName}
+        <b>File Name:</b>{" "}
+        {file?.fileName && file?.fileName.length > 30
+          ? file?.fileName.slice(0, 14) + "..."
+          : file?.fileName}
       </p>
 
       <p>

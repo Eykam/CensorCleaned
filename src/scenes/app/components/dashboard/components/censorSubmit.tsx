@@ -8,7 +8,11 @@ import {
 import { useAppSelector, useAppDispatch } from "../../../../../store/store";
 import { Button } from "@mui/material";
 
-const CensorSubmit = () => {
+const CensorSubmit = ({
+  downloaded = undefined,
+}: {
+  downloaded: undefined | (() => void);
+}) => {
   const dispatch = useAppDispatch();
 
   const badWords = useAppSelector((state) => state.data.censorship.censorList);
@@ -53,6 +57,9 @@ const CensorSubmit = () => {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+    setTimeout(() => {
+      if (downloaded) downloaded();
+    }, 3000);
   };
 
   const checkBrowser = () => {
@@ -71,8 +78,8 @@ const CensorSubmit = () => {
         "download-button-censor"
       ) as HTMLAnchorElement;
 
-      submitButton.innerHTML = "Resubmit";
-      submitButton.style.marginLeft = "0%";
+      submitButton.style.display = "none";
+      // submitButton.style.marginLeft = "0%";
 
       downloadButton.style.display = "flex";
       downloadButton.href = censoredURLObject;
@@ -92,8 +99,8 @@ const CensorSubmit = () => {
           : {
               marginLeft: "auto",
               marginTop: "0%",
-              width: "50%",
-              minWidth: "40vw",
+              // width: "50%",
+              // minWidth: "40vw",
               display: "flex",
               justifyContent: "right",
             }
@@ -105,7 +112,7 @@ const CensorSubmit = () => {
         style={{
           marginLeft: "auto",
           fontWeight: "bold",
-          width: "20%",
+          width: "100%",
           color: "lightgray",
           backgroundColor: "rgb(80,80,80)",
         }}
@@ -116,9 +123,10 @@ const CensorSubmit = () => {
 
       <Button
         id="download-button-censor"
+        variant="contained"
         style={{
           fontWeight: "bold",
-          width: "20%",
+          width: "100%",
           display: "none",
           justifyContent: "center",
           alignItems: "center",

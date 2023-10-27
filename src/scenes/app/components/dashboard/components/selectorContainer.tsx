@@ -66,11 +66,11 @@ const SelectorContainer = ({
       if (selectedInput.checked) {
         selectedExpanded.style.display = "none";
         selectedExpander.innerHTML = "[+]";
-        selectedOuter.style.height = "auto";
+        // selectedOuter.style.height = "auto";
       } else {
         selectedExpanded.style.display = "block";
         selectedExpander.innerText = "[-]";
-        selectedOuter.style.height = "100%";
+        selectedOuter.style.height = "auto";
       }
     }
   };
@@ -85,7 +85,7 @@ const SelectorContainer = ({
   return (
     <>
       {/* <div id="manual-outer" className="manual-outer"> */}
-      <Box gridColumn="span 1" gridRow="span 2">
+      <Box gridColumn="span 1">
         <Paper
           id="transcribed-words"
           className=" manual-inner"
@@ -128,12 +128,11 @@ const SelectorContainer = ({
         </Paper>
       </Box>
 
-      <Box gridColumn="span 1" gridRow="span 2">
+      <Box gridColumn="span 1">
         <Paper
           id="selected-words-outer"
           className=" manual-inner"
           style={{
-            height: "100%",
             margin: "0",
             padding: "0",
             background: "rgb(70, 70, 70)",
@@ -171,11 +170,7 @@ const SelectorContainer = ({
               </span>
             </label>
 
-            {currWords != null ? (
-              <SelectedWords displayWord={focusWord} />
-            ) : (
-              <></>
-            )}
+            <SelectedWords displayWord={focusWord} />
           </div>
         </Paper>
       </Box>

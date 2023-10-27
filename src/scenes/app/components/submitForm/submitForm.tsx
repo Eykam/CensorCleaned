@@ -60,30 +60,6 @@ const SubmitForm = () => {
     dispatch(showFileInfo());
   });
 
-  useEffect(() => {
-    const uploadedVideo = document.getElementById(
-      "uploaded-video"
-    ) as HTMLVideoElement;
-    const loading = document.getElementById(
-      "loading-transcribe"
-    ) as HTMLDivElement;
-
-    if (
-      transcriptionStatus === RequestStates.success ||
-      transcriptionStatus === RequestStates.error
-    ) {
-      loading.style.display = "none";
-      uploadedVideo.style.display = "block";
-    }
-    if (transcriptionStatus === RequestStates.pending) {
-      if (uploadedVideo != null) {
-        uploadedVideo.pause();
-        uploadedVideo.style.display = "none";
-      }
-      if (loading != null) loading.style.display = "block";
-    }
-  }, [transcriptionStatus]);
-
   return (
     <Toggle id={componentIDs.submitForm}>
       {checkBrowser() ? (
@@ -101,7 +77,7 @@ const SubmitForm = () => {
           <div style={{ display: "block" }}>
             <FileInfo />
           </div>
-          <Loading loaderId="transcribe" />
+
           <SubmitSettings />
 
           <br />
@@ -176,7 +152,6 @@ const SubmitForm = () => {
             <FileInfo />
           </div>
 
-          <Loading loaderId="transcribe" />
           <SubmitSettings />
         </div>
       )}

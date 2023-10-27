@@ -38,40 +38,40 @@
 }
 .loading .x:nth-child(2) {
   left: 5px;
-  background-color: rgb(189, 189, 189);
+  background-color: rgb(190, 190, 190);
   animation-delay: 0.1s;
 }
 .loading .x:nth-child(3) {
   left: 10px;
-  background-color: rgb(155, 155, 155);
+  background-color: rgb(175, 175, 175);
   animation-delay: 0.2s;
 }
 .loading .x:nth-child(4) {
   left: 15px;
-  background-color: rgb(122, 122, 122);
+  background-color: rgb(160, 160, 160);
   animation-delay: 0.3s;
 }
 .loading .x:nth-child(5) {
   left: 20px;
-  background-color: rgb(102, 102, 102);
+  background-color: rgb(145, 145, 145);
 
   animation-delay: 0.4s;
 }
 .loading .x:nth-child(6) {
   left: 25px;
-  background-color: rgb(61, 61, 61);
+  background-color: rgb(130, 130, 130);
 
   animation-delay: 0.5s;
 }
 .loading .x:nth-child(7) {
   left: 30px;
-  background-color: rgb(36, 36, 36);
+  background-color: rgb(115, 115, 115);
 
   animation-delay: 0.6s;
 }
 .loading .x:nth-child(8) {
   left: 35px;
 
-  background-color: rgb(30, 30, 30);
+  background-color: rgb(100, 100, 100);
   animation-delay: 0.7s;
 }

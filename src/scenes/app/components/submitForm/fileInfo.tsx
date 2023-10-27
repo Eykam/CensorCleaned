@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../store/store";
 import Toggle from "../../../utils/components/toggle";
 import { componentIDs } from "../../../../store/features/formSlice";
@@ -8,35 +8,23 @@ import Loading from "../../../utils/components/loading";
 const FileInfo = () => {
   const dispatch = useAppDispatch();
 
+  const [loading, setLoading] = useState(false);
   const file = useAppSelector((state) => state.file.uploadedFile);
-
-  const censoredStatus = useAppSelector(
-    (state) => state.data.censorship.status
-  );
-
-  const censoredUrl = useAppSelector(
-    (state) => state.data.censorship.censorURL
+  const transcriptionStatus = useAppSelector(
+    (state) => state.data.transcription.status
   );
 
   const checkIfPending = () => {
-    return censoredStatus === RequestStates.pending;
-  };
-
-  const checkIFSmallLaptop = () => {
-    return window.innerWidth <= 1500;
+    return transcriptionStatus === RequestStates.pending;
   };
 
   useEffect(() => {
-    const censorLoader = document.getElementById(
-      "loading-censor"
-    ) as HTMLDivElement;
-
-    if (censoredStatus === RequestStates.pending && censoredUrl === "") {
-      censorLoader.style.display = "block";
-    } else if (censoredStatus === RequestStates.success && censoredUrl === "") {
-      censorLoader.style.display = "none";
+    if (transcriptionStatus === RequestStates.pending) {
+      setLoading(true);
+    } else {
+      setLoading(false);
     }
-  }, [dispatch, censoredStatus, censoredUrl]);
+  }, [dispatch, transcriptionStatus]);
 
   return (
     <Toggle id={componentIDs.fileInfo}>
@@ -47,12 +35,22 @@ const FileInfo = () => {
           display: "block",
         }}
       >
-        <div style={{ width: "fit-content", minWidth: "40vw" }}>
+        <div style={{ width: "40vw" }}>
           <h3 style={{ marginTop: "0" }}>Submission Details:</h3>
 
-          <p style={{ display: "flex", maxWidth: "80%" }}>
-            <b>File Name:</b> {file?.fileName}
-          </p>
+          <span
+            style={{
+              display: "block",
+              maxWidth: "50%",
+              // textOverflow: "ellipsis",
+              // overflow: "hidden",
+            }}
+          >
+            <b>File Name:</b>{" "}
+            {file?.fileName && file?.fileName.length > 30
+              ? file?.fileName.slice(0, 14) + "..."
+              : file?.fileName}
+          </span>
 
           <p>
             <b>File Type:</b> {file?.fileType}
@@ -62,7 +60,7 @@ const FileInfo = () => {
             <b>File Size:</b> {file?.fileSize}
           </p>
 
-          <Loading loaderId="censor" />
+          {loading && <Loading loaderId="transcribe" />}
         </div>
 
         <br />

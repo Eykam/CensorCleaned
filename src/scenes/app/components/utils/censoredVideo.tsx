@@ -1,16 +1,8 @@
-import React, { useEffect, useRef } from "react";
-import Toggle from "../../../utils/components/toggle";
-import {
-  componentIDs,
-  showCensoredVideo,
-} from "../../../../store/features/formSlice";
-import { useAppDispatch, useAppSelector } from "../../../../store/store";
+import React from "react";
+import { useAppSelector } from "../../../../store/store";
 import { RequestStates } from "../../../../store/features/dataSlice";
-import Loading from "../../../utils/components/loading";
 
 const CensoredVideo = () => {
-  const dispatch = useAppDispatch();
-
   const censorStatus = useAppSelector((state) => state.data.censorship.status);
 
   const censorURLObject = useAppSelector(
@@ -29,9 +21,9 @@ const CensoredVideo = () => {
     return window.matchMedia("(max-width: 767px)").matches;
   };
 
-  const checkIFSmallLaptop = () => {
-    return window.innerWidth <= 1500;
-  };
+  // const checkIFSmallLaptop = () => {
+  //   return window.innerWidth <= 1500;
+  // };
 
   const getTotalWords = () => {
     let total = 0;
@@ -52,105 +44,85 @@ const CensoredVideo = () => {
       : 0 / Number(requestTime);
   };
 
-  useEffect(() => {
-    const loaderResubmit = document.getElementById(
-      "loading-resubmit"
-    ) as HTMLDivElement;
-
-    const censoredVideo = document.getElementById(
-      "censored-video"
-    ) as HTMLVideoElement;
-
-    if (censorStatus === RequestStates.success && censorURLObject !== "") {
-      dispatch(showCensoredVideo());
-      if (loaderResubmit != null) loaderResubmit.style.display = "none";
-    } else if (
-      censorStatus === RequestStates.pending &&
-      censorURLObject !== ""
-    ) {
-      loaderResubmit.style.height = censoredVideo.style.height;
-      loaderResubmit.style.width = censoredVideo.style.width;
-      loaderResubmit.style.display = "flex";
-      loaderResubmit.style.padding = "auto";
-      loaderResubmit.style.margin = "auto";
-    }
-  }, [dispatch, censorStatus, censorURLObject]);
-
   return (
-    <Toggle id={componentIDs.censoredVideo}>
-      <div
-        style={{
-          width: checkBrowser() ? "100vw" : "50%",
-          minWidth: "50%",
-        }}
-      >
-        <h2> Censored Video</h2>
+    <div>
+      {/* <h2 style={{ padding: "0", marginTop: "0" }}> Censored Video</h2> */}
 
-        <div style={{ marginTop: "auto" }}>
-          <div
+      <div style={{ marginTop: "auto" }}>
+        <div>
+          <span
             style={{
-              display: "flex",
-              width: "75%",
+              marginRight: "5%",
+              maxWidth: "100%",
+              textOverflow: "ellipsis",
+              overflow: "hidden",
             }}
           >
-            <span
-              style={{
-                marginRight: "5%",
-                maxWidth: "100%",
-                textOverflow: "ellipsis",
-                overflow: "hidden",
-              }}
-            >
-              <b>File Name: </b>
-              {"censored-" + fileInfo?.fileName}
+            <b>File Name: </b>
+            <span style={{ color: "rgb(150,150,150)", fontWeight: "bold" }}>
+              {" "}
+              {fileInfo?.fileName && fileInfo?.fileName.length > 30
+                ? "censored-" + fileInfo?.fileName.slice(0, 14) + "..."
+                : "censored-" + fileInfo?.fileName}
             </span>
-
-            <span style={{ marginLeft: "auto" }}>
-              <b> Size: </b>
-              {fileInfo?.fileSize}
-            </span>
-          </div>
-
-          <br />
-
-          <div>
-            <b>Total Words Censored: </b>
-            {getTotalWords()}
-          </div>
-
-          <br />
-
-          <div>
-            <b>Total Editing Time: </b>
-            {requestTime} secs
-          </div>
-
-          <br />
-
-          <div>
-            <b>Speedup (compared to video length): </b>
-            {getSpeedUp().toFixed(2)}x
-          </div>
-
-          <br />
-
-          <video
-            controls
-            id="censored-video"
-            style={{
-              width: checkIFSmallLaptop() ? "90%" : "100%",
-              borderRadius: "15px",
-              display:
-                censorStatus === RequestStates.pending ? "none" : "block",
-            }}
-            autoPlay
-            src={censorURLObject}
-          />
-
-          <Loading loaderId="resubmit" />
+          </span>
         </div>
+
+        <br />
+
+        <div>
+          <b> Size: </b>
+          <span style={{ color: "rgb(150,150,150)", fontWeight: "bold" }}>
+            {" "}
+            {fileInfo?.fileSize}
+          </span>
+        </div>
+
+        <br />
+
+        <div>
+          <b>Total Words Censored: </b>
+          <span style={{ color: "rgb(150,150,150)", fontWeight: "bold" }}>
+            {" "}
+            {getTotalWords()}
+          </span>
+        </div>
+
+        <br />
+
+        <div>
+          <b>Total Editing Time: </b>
+          <span style={{ color: "rgb(150,150,150)", fontWeight: "bold" }}>
+            {" "}
+            {requestTime} secs
+          </span>
+        </div>
+
+        <br />
+
+        <div>
+          <b>Speedup (compared to video length): </b>
+          <span style={{ color: "rgb(150,150,150)", fontWeight: "bold" }}>
+            {" "}
+            {getSpeedUp().toFixed(2)}x
+          </span>
+        </div>
+
+        <br />
+
+        <video
+          controls
+          id="censored-video"
+          style={{
+            borderRadius: checkBrowser() ? "15px" : "5px",
+            display: censorStatus === RequestStates.pending ? "none" : "block",
+            width: "100%",
+          }}
+          autoPlay
+          src={censorURLObject}
+        />
       </div>
-    </Toggle>
+    </div>
   );
 };
 
