@@ -79,6 +79,7 @@ const Header = () => {
         <GoogleLogin
           onSuccess={(response) => handleSuccess(response)}
           onError={handleError}
+          auto_select={true}
           // isSignedIn={true}
         />
       )}

@@ -12,7 +12,7 @@ import { useAppSelector, useAppDispatch } from "../../../../store/store";
 import { FileUpload } from "../../../../store/features/fileSlice";
 import { Mode } from "../../../../store/features/dataSlice";
 import ProgressBar from "../../../utils/components/progressBar";
-import { socket } from "../../../../socket";
+// import { socket } from "../../../../socket";
 import { Button } from "@mui/material";
 
 const SubmitSettings = () => {
@@ -62,7 +62,7 @@ const SubmitSettings = () => {
     ) {
       console.log("Moving to transcription...");
 
-      socket.emit("uploadedFile", fetchData.sendFile.response.body.uuid);
+      // socket.emit("uploadedFile", fetchData.sendFile.response.body.uuid);
 
       dispatch(
         fetchTranscription({
