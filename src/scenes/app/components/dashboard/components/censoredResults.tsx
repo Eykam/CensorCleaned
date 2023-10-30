@@ -17,8 +17,13 @@ const CensoredResults = () => {
   const focusWord = (word: string) => {
     setFocusedWord(word);
   };
+
   const checkBrowser = () => {
     return window.innerWidth <= 1500;
+  };
+
+  const checkMobile = () => {
+    return window.innerWidth <= 1200;
   };
 
   const rows = ({
@@ -54,7 +59,7 @@ const CensoredResults = () => {
       <Paper
         style={{
           display: "inline-block",
-          height: "30%",
+          height: checkMobile() ? "22vh" : "30%",
           width: "98%",
           background: "rgb(70, 70, 70)",
           color: "lightgray",

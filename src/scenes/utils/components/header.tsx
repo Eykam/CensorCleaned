@@ -76,12 +76,13 @@ const Header = () => {
           {/* <UserMenu img={getProfileImage()} /> */}
         </div>
       ) : (
-        <GoogleLogin
-          onSuccess={(response) => handleSuccess(response)}
-          onError={handleError}
-          auto_select={true}
-          // isSignedIn={true}
-        />
+        // <GoogleLogin
+        //   onSuccess={(response) => handleSuccess(response)}
+        //   onError={handleError}
+        //   auto_select={true}
+        //   // isSignedIn={true}
+        // />
+        <></>
       )}
     </div>
   );

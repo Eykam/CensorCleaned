@@ -42,7 +42,7 @@ const App = () => {
         <Footer />
       </div>
 
-      <div className="bg"></div>
+      {/* <div className="bg"></div> */}
     </div>
   );
 };

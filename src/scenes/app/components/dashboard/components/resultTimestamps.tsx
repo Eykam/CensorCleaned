@@ -63,6 +63,10 @@ const ResultTimestamps = ({ word }: { word: string }) => {
     }
   }, [prevVideoUrl]);
 
+  const checkMobile = () => {
+    return window.innerWidth <= 1200;
+  };
+
   const playClip = (start: number, end: number, prev: boolean = false) => {
     try {
       const videoPlayer = document.getElementsByTagName(
@@ -143,43 +147,49 @@ const ResultTimestamps = ({ word }: { word: string }) => {
               >
                 <b>{printTimeStamp(time)}</b>
 
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <b>Before: </b>
-                  <IconButton
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      playClip(time[0], time[1], true);
-                    }}
-                    aria-label={"play-clip-button-for" + word + "-" + time}
-                    style={{
-                      float: "right",
-                      margin: "0",
-                      padding: "0",
-                      color: "lightgray",
-                    }}
-                  >
-                    <SmartDisplayIcon />
-                  </IconButton>
-                </div>
+                {checkMobile() ? (
+                  <></>
+                ) : (
+                  <>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <b>Before: </b>
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          playClip(time[0], time[1], true);
+                        }}
+                        aria-label={"play-clip-button-for" + word + "-" + time}
+                        style={{
+                          float: "right",
+                          margin: "0",
+                          padding: "0",
+                          color: "lightgray",
+                        }}
+                      >
+                        <SmartDisplayIcon />
+                      </IconButton>
+                    </div>
 
-                <div style={{ display: "flex", alignItems: "center" }}>
-                  <b>After: </b>
-                  <IconButton
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      playClip(time[0], time[1]);
-                    }}
-                    aria-label={"play-clip-button-for" + word + "-" + time}
-                    style={{
-                      float: "right",
-                      margin: "0",
-                      padding: "0",
-                      color: "lightgray",
-                    }}
-                  >
-                    <SmartDisplayIcon />
-                  </IconButton>
-                </div>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <b>After: </b>
+                      <IconButton
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          playClip(time[0], time[1]);
+                        }}
+                        aria-label={"play-clip-button-for" + word + "-" + time}
+                        style={{
+                          float: "right",
+                          margin: "0",
+                          padding: "0",
+                          color: "lightgray",
+                        }}
+                      >
+                        <SmartDisplayIcon />
+                      </IconButton>
+                    </div>
+                  </>
+                )}
               </div>
             );
           })}

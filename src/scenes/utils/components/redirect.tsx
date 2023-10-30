@@ -18,13 +18,17 @@ const Redirect = ({
     }, 1000);
   }, [time]);
 
+  const checkMobile = () => {
+    return window.innerWidth < 1200;
+  };
+
   return (
     <Paper
       style={{
         display: "flex",
         flexDirection: "column",
-        width: "30vw",
-        height: "30vh",
+        width: checkMobile() ? "60vw" : "30vw",
+        height: checkMobile() ? "40vh" : "30vh",
         background: "rgb(70,70,70)",
         color: "lightgray",
         padding: "5%",

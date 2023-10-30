@@ -336,7 +336,7 @@ const Dashboard = ({
             </Paper>
 
             {/* Container for Submit buttons and options*/}
-            <Box style={{ margin: "2% 0" }}>
+            <Box style={{ margin: "2% 0", marginBottom: "" }}>
               <Paper
                 style={{
                   height: "fit-content",
@@ -355,13 +355,12 @@ const Dashboard = ({
 
         {submittingStatus === RequestStates.pending && (
           <Box
-            display="grid"
-            gridTemplateColumns="repeat(32,1fr)"
+            display="block"
             gap="20px"
-            style={{ padding: "2%" }}
+            style={{ width: "95%", margin: "auto" }}
           >
             {/* Container for header*/}
-            <Box gridColumn="span 32">
+            <Box>
               <Paper
                 style={{
                   height: "100%",
@@ -379,7 +378,7 @@ const Dashboard = ({
               </Paper>
             </Box>
 
-            <Box gridColumn="span 32">
+            <Box>
               <div
                 style={{
                   color: "lightgray",
@@ -394,14 +393,14 @@ const Dashboard = ({
         )}
 
         {submittingStatus === RequestStates.success && (
-          <Box display="grid" gridTemplateColumns="repeat(32,1fr)" gap="20px">
+          <Box display="block" gap="20px">
             {/* Container for header*/}
             <Box gridColumn="span 32">
               <Paper
                 style={{
                   height: "100%",
                   color: "lightgray",
-                  background: "rgb(70, 70, 70)",
+                  background: "none",
                 }}
               >
                 <div style={{ display: "flex", margin: "auto" }}>
@@ -417,7 +416,7 @@ const Dashboard = ({
               <Paper
                 style={{
                   color: "lightgray",
-                  background: "rgb(70, 70, 70)",
+                  background: "none",
                   padding: "2%",
                 }}
               >
@@ -433,8 +432,9 @@ const Dashboard = ({
               <div
                 style={{
                   display: "flex",
-                  width: "100%",
-                  justifyContent: "end",
+                  padding: "1%",
+                  width: "30%",
+                  marginLeft: "auto",
                 }}
               >
                 <CensorSubmit downloaded={userDownloaded} />
