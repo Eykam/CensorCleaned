@@ -1,19 +1,42 @@
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import { Button } from "@mui/material";
+import UserMenu from "./userMenu";
 
 const Header = () => {
+  const [user, setUser] = useState<null | CredentialResponse>(null);
+
   const isMobile = () => {
     return window.matchMedia("(max-width: 767px)").matches;
   };
 
+  const handleSuccess = (response: CredentialResponse) => {
+    console.log("Successfully logged in", response);
+    // setUser(response);
+  };
+
+  const handleError = () => {
+    console.log("Failed to log in");
+  };
+
+  const logOut = () => {
+    // setUser(null);
+  };
+
+  // useEffect(() => {
+  //   console.log("image src:", getProfileImage());
+  //   getProfileImage();
+  // }, [user]);
+
   return (
     <div
       style={{
-        width: "100%",
+        width: "97%",
         color: "rgb(226, 226, 226)",
         background: "#111111",
-        padding: isMobile() ? "2% 0" : ".5% 0",
-        paddingLeft: "1%",
+        padding: isMobile() ? "2% 1%" : ".5% 1%",
         display: "flex",
+        justifyContent: "space-between",
         borderBottom: "solid 2px rgb(30, 30, 30)",
       }}
     >
@@ -21,11 +44,18 @@ const Header = () => {
         style={
           isMobile()
             ? {
+                display: "flex",
                 margin: "0",
                 marginLeft: "4%",
                 cursor: "pointer",
+                alignItems: "center",
               }
-            : { margin: "0", cursor: "pointer" }
+            : {
+                display: "flex",
+                margin: "0",
+                cursor: "pointer",
+                alignItems: "center",
+              }
         }
         onClick={() => {
           window.location.reload();
@@ -34,23 +64,24 @@ const Header = () => {
         Sanitize.gg
       </h2>
 
-      <button
-        style={{
-          marginLeft: "auto",
-          marginRight: isMobile() ? "4%" : "3%",
-          borderRadius: "7px",
-          width: isMobile() ? "15%" : "4%",
-          fontWeight: "bold",
-          color: "lightgrey",
-          background: "none",
-
-          border: "solid 2px lightgrey",
-          cursor: "pointer",
-        }}
-        onClick={() => {}}
-      >
-        Log In
-      </button>
+      {user ? (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          {/* <UserMenu img={getProfileImage()} /> */}
+        </div>
+      ) : (
+        <GoogleLogin
+          onSuccess={(response) => handleSuccess(response)}
+          onError={handleError}
+          // isSignedIn={true}
+        />
+      )}
     </div>
   );
 };

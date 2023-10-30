@@ -1,6 +1,9 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { FileUpload } from "./fileSlice";
 
+const BASEURL = "http://192.168.1.171:8800";
+const CENSOR_THRESHOLD = 0.65;
+
 export enum endpoints {
   sendFile = "/file",
   fetchTranscription = "/fetchTranscription",
@@ -60,9 +63,6 @@ interface DataState {
   suggestedWords: { [index: string]: number[][] };
   originalSuggestedWords: { [index: string]: number[][] };
 }
-
-const BASEURL = "http://192.168.1.171:8800";
-const CENSOR_THRESHOLD = 0.65;
 
 function generateUUID() {
   // Public Domain/MIT
