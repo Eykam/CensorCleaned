@@ -26,10 +26,7 @@ const AppEntry = () => {
     let words: { [index: string]: number[][] } | null = null;
 
     const showTranscription = () => {
-      if (
-        transcriptionResponse?.data !== undefined &&
-        transcriptionResponse.data.length > 0
-      ) {
+      if (transcriptionResponse?.data !== undefined) {
         if (!mobile && Notification.permission)
           new Notification("Transcription Complete!");
 

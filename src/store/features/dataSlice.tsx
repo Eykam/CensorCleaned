@@ -1,7 +1,9 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { FileUpload } from "./fileSlice";
 
-const BASEURL = "http://192.168.1.171:8800";
+// const BASEURL = "http://192.168.1.171:8800";
+const BASEURL = "https://driven-fowl-privately.ngrok-free.app";
+// const BASEURL = "";
 const CENSOR_THRESHOLD = 0.65;
 
 export enum endpoints {
@@ -112,6 +114,9 @@ export const sendFile = createAsyncThunk(
 
         let data = await fetch(BASEURL + endpoints.sendFile, {
           method: "POST",
+          headers: new Headers({
+            "ngrok-skip-browser-warning": "true",
+          }),
           body: formData,
         });
 
@@ -144,6 +149,7 @@ export const fetchTranscription = createAsyncThunk(
         let data = await fetch(BASEURL + endpoints.fetchTranscription, {
           method: "POST",
           headers: {
+            "ngrok-skip-browser-warning": "true",
             "Content-Type": "application/json; charset=utf-8",
           },
           body: body,
@@ -174,6 +180,7 @@ export const fetchCensorship = createAsyncThunk(
         method: "POST",
         headers: {
           "Content-Type": "application/json; charset=utf-8",
+          "ngrok-skip-browser-warning": "69420",
         },
         body: body,
       });

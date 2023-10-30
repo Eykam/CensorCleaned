@@ -388,6 +388,7 @@ const UncensoredSelector = ({
               marginRight: "0%",
               fontSize: "100%",
               padding: "1px",
+              width: "5%",
             }}
           >
             <input

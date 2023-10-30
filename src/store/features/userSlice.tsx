@@ -2,7 +2,9 @@ import { PayloadAction, createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { CredentialResponse } from "@react-oauth/google";
 
-const BASEURL = "http://192.168.1.171:8800";
+// const BASEURL = "http://192.168.1.171:8800";
+const BASEURL = "https://driven-fowl-privately.ngrok-free.app";
+// const BASEURL = "";
 
 export enum UserEndpoints {
   login = "/login",

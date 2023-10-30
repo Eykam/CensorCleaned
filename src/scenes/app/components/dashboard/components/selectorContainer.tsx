@@ -2,12 +2,18 @@ import React from "react";
 import "../../../css/manualResults.css";
 import WordSelector from "./uncensoredSelector";
 import SelectedWords from "./censoredSelector";
-import { Box, Paper } from "@mui/material";
+import { Box, Paper, Tabs, Tab } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useRef, useState } from "react";
 import { Callers } from "./wordCard";
 import { updateFocusedWord } from "../../../../../store/features/formSlice";
 import { useAppDispatch } from "../../../../../store/store";
+
+interface TabPanelProps {
+  children?: React.ReactNode;
+  index: number;
+  value: number;
+}
 
 const SelectorContainer = ({
   mobile,
@@ -23,6 +29,7 @@ const SelectorContainer = ({
   console.log("WordsContainer Re-Render");
   const dispatch = useAppDispatch();
 
+  const [value, setValue] = React.useState(0);
   const [highlighted, setHighlighted] = useState("");
 
   const hideWordSelectors = (container: string) => {
@@ -82,9 +89,103 @@ const SelectorContainer = ({
     dispatch(updateFocusedWord({ word: currWord, caller: caller }));
   };
 
-  return (
+  const CustomTabPanel = (props: TabPanelProps) => {
+    const { children, value, index, ...other } = props;
+
+    return (
+      <div
+        role="tabpanel"
+        hidden={value !== index}
+        id={`simple-tabpanel-${index}`}
+        aria-labelledby={`simple-tab-${index}`}
+        {...other}
+      >
+        {value === index && <>{children}</>}
+      </div>
+    );
+  };
+
+  function a11yProps(index: number) {
+    return {
+      id: `simple-tab-${index}`,
+      "aria-controls": `simple-tabpanel-${index}`,
+    };
+  }
+
+  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+    setValue(newValue);
+  };
+
+  return mobile ? (
     <>
-      {/* <div id="manual-outer" className="manual-outer"> */}
+      <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          aria-label="basic tabs example"
+        >
+          <Tab
+            label="Word Bank"
+            {...a11yProps(0)}
+            style={{ color: "lightgray" }}
+          />
+          <Tab
+            label="Censoring"
+            {...a11yProps(1)}
+            style={{ color: "lightgray" }}
+          />
+        </Tabs>
+      </Box>
+
+      <CustomTabPanel value={value} index={0}>
+        <Box style={{ height: "50vh" }}>
+          <Paper
+            id="transcribed-words"
+            className=" manual-inner"
+            style={{
+              background: "none",
+              color: "lightgray",
+              margin: "0",
+              padding: "0",
+              boxShadow: "none",
+            }}
+          >
+            <div style={{ padding: "4%" }}>
+              {currWords != null ? (
+                <WordSelector
+                  originalEntries={currWords}
+                  displayWord={focusWord}
+                />
+              ) : (
+                <></>
+              )}
+            </div>
+          </Paper>
+        </Box>
+      </CustomTabPanel>
+
+      <CustomTabPanel value={value} index={1}>
+        <Box style={{ height: "50vh" }}>
+          <Paper
+            id="selected-words-outer"
+            className=" manual-inner"
+            style={{
+              margin: "0",
+              padding: "0",
+              background: "none",
+              color: "lightgray",
+              boxShadow: "none",
+            }}
+          >
+            <div style={{ padding: "4%" }}>
+              <SelectedWords displayWord={focusWord} />
+            </div>
+          </Paper>
+        </Box>
+      </CustomTabPanel>
+    </>
+  ) : (
+    <>
       <Box gridColumn="span 1">
         <Paper
           id="transcribed-words"
@@ -127,7 +228,6 @@ const SelectorContainer = ({
           </div>
         </Paper>
       </Box>
-
       <Box gridColumn="span 1">
         <Paper
           id="selected-words-outer"
@@ -173,7 +273,7 @@ const SelectorContainer = ({
             <SelectedWords displayWord={focusWord} />
           </div>
         </Paper>
-      </Box>
+      </Box>{" "}
     </>
   );
 };
