@@ -31,7 +31,7 @@ const SubmitForm = () => {
   };
 
   const checkBrowser = () => {
-    return window.matchMedia("(max-width: 767px)").matches;
+    return window.innerWidth < 1200;
   };
 
   const askNotificationPermission = (e: SyntheticEvent) => {

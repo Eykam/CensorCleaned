@@ -117,6 +117,8 @@ export const sendFile = createAsyncThunk(
           headers: new Headers({
             "ngrok-skip-browser-warning": "true",
           }),
+          //Dont forget to remove and figure out problem
+          // mode: "cors",
           body: formData,
         });
 
@@ -152,6 +154,8 @@ export const fetchTranscription = createAsyncThunk(
             "ngrok-skip-browser-warning": "true",
             "Content-Type": "application/json; charset=utf-8",
           },
+          //Dont forget to remove and figure out problem
+          // mode: "cors",
           body: body,
         });
 
@@ -182,6 +186,8 @@ export const fetchCensorship = createAsyncThunk(
           "Content-Type": "application/json; charset=utf-8",
           "ngrok-skip-browser-warning": "69420",
         },
+        //Dont forget to remove and figure out problem
+        // mode: "cors",
         body: body,
       });
 
