@@ -59,13 +59,12 @@ const Login = () => {
 
         <div
           style={{
-            height: "95%",
-            width: "100%",
+            height: "100%",
+            width: checkMobile() ? "80%" : "100%",
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
-            margin: "2%",
           }}
         >
           <div>
