@@ -56,10 +56,21 @@
 }
 
 #body-div {
-  height: 95%;
+  height: 100%;
   width: 100%;
   min-width: 100vw;
   display: flex;
   align-items: center;
-  overflow-y: scroll;
+}
+
+@media (max-width: 1200px) {
+  #body-div {
+    height: 100%;
+    width: 100%;
+    min-width: 100vw;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-between;
+  }
 }

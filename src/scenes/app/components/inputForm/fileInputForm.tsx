@@ -88,8 +88,8 @@ const FileInputForm = () => {
   //Hides form after FileUpload is successfully stored
   const hideForm = () => {
     dispatch(hideFileInput());
-    dispatch(hideDescription());
-    dispatch(hideFAQ());
+    // dispatch(hideDescription());
+    // dispatch(hideFAQ());
     dispatch(showSubmitForm());
     // dispatch(showDashboard());
   };

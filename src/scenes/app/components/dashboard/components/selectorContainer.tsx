@@ -123,14 +123,15 @@ const SelectorContainer = ({
           value={value}
           onChange={handleChange}
           aria-label="basic tabs example"
+          style={{ color: "lightgray" }}
+          variant="fullWidth"
+          TabIndicatorProps={{
+            sx: { backgroundColor: "lightgray" },
+          }}
         >
+          <Tab label="Words" {...a11yProps(0)} style={{ color: "lightgray" }} />
           <Tab
-            label="Word Bank"
-            {...a11yProps(0)}
-            style={{ color: "lightgray" }}
-          />
-          <Tab
-            label="Censoring"
+            label="To Censor"
             {...a11yProps(1)}
             style={{ color: "lightgray" }}
           />
@@ -203,7 +204,7 @@ const SelectorContainer = ({
           }}
         >
           <div style={{ padding: "4%" }}>
-            <b>KEEP</b>
+            <b>WORDS</b>
             <label style={{ float: "right", fontSize: "100%", padding: "1px" }}>
               <input
                 type="checkbox"
@@ -244,7 +245,7 @@ const SelectorContainer = ({
           }}
         >
           <div style={{ padding: "4%" }}>
-            <b>CENSOR</b>
+            <b>TO CENSOR</b>
 
             <label
               style={{

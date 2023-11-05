@@ -18,7 +18,7 @@ const AppEntry = () => {
   } | null>(null);
 
   useEffect(() => {
-    setMobile(window.matchMedia("(max-width: 767px)").matches);
+    setMobile(window.innerWidth < 1200);
   }, []);
 
   useEffect(() => {
@@ -66,7 +66,7 @@ const AppEntry = () => {
       id="app-entry"
       style={{
         margin: "auto",
-        display: "none",
+        display: "flex",
         justifyContent: "center",
       }}
     >

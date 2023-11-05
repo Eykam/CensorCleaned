@@ -7,6 +7,7 @@
 }
 .loading {
   position: relative;
+  z-index: 0;
 }
 
 @keyframes loading {

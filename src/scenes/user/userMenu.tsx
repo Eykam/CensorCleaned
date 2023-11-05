@@ -7,8 +7,14 @@ import Popper from "@mui/material/Popper";
 import MenuItem from "@mui/material/MenuItem";
 import MenuList from "@mui/material/MenuList";
 import Stack from "@mui/material/Stack";
+import { logout } from "../../store/features/userSlice";
+import { useAppSelector, useAppDispatch } from "../../store/store";
+import { useNavigate } from "react-router-dom";
 
 const UserMenu = ({ img }: { img: string }) => {
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+
   const [open, setOpen] = React.useState(false);
   const anchorRef = React.useRef<HTMLButtonElement>(null);
 
@@ -47,7 +53,13 @@ const UserMenu = ({ img }: { img: string }) => {
   }, [open]);
 
   const handleLogout = (event: Event | React.SyntheticEvent) => {
-    handleClose(event);
+    dispatch(logout(null));
+
+    // handleClose(event);
+  };
+
+  const navigateProfile = () => {
+    navigate("/profile");
   };
 
   return (
@@ -76,6 +88,7 @@ const UserMenu = ({ img }: { img: string }) => {
           placement="bottom-start"
           transition
           disablePortal
+          style={{ zIndex: 5, position: "relative" }}
         >
           {({ TransitionProps, placement }) => (
             <Grow
@@ -85,7 +98,7 @@ const UserMenu = ({ img }: { img: string }) => {
                   placement === "bottom-start" ? "left top" : "left bottom",
               }}
             >
-              <Paper>
+              <Paper style={{ background: "lightgray" }}>
                 <ClickAwayListener onClickAway={handleClose}>
                   <MenuList
                     autoFocusItem={open}
@@ -93,8 +106,15 @@ const UserMenu = ({ img }: { img: string }) => {
                     aria-labelledby="composition-button"
                     onKeyDown={handleListKeyDown}
                   >
-                    <MenuItem onClick={handleClose}>Profile</MenuItem>
-                    <MenuItem onClick={handleClose}>My account</MenuItem>
+                    <MenuItem
+                      onClick={(e) => {
+                        navigateProfile();
+                        handleClose(e);
+                      }}
+                    >
+                      Profile
+                    </MenuItem>
+                    {/* <MenuItem onClick={handleClose}>Pricing</MenuItem> */}
                     <MenuItem onClick={handleLogout}>Logout</MenuItem>
                   </MenuList>
                 </ClickAwayListener>

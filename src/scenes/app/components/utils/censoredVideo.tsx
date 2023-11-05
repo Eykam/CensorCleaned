@@ -18,7 +18,7 @@ const CensoredVideo = () => {
   );
 
   const checkBrowser = () => {
-    return window.matchMedia("(max-width: 767px)").matches;
+    return window.innerWidth < 1200;
   };
 
   // const checkIFSmallLaptop = () => {
@@ -37,7 +37,7 @@ const CensoredVideo = () => {
   };
 
   const getSpeedUp = () => {
-    const video = document.getElementById("censored-video") as HTMLVideoElement;
+    const video = document.getElementsByTagName("video")[0] as HTMLVideoElement;
 
     return video
       ? video.duration / Number(requestTime)
@@ -68,7 +68,7 @@ const CensoredVideo = () => {
           </span>
         </div>
 
-        <br />
+        {checkBrowser() ? <></> : <br />}
 
         <div>
           <b> Size: </b>
@@ -78,7 +78,7 @@ const CensoredVideo = () => {
           </span>
         </div>
 
-        <br />
+        {checkBrowser() ? <></> : <br />}
 
         <div>
           <b>Total Words Censored: </b>
@@ -88,7 +88,7 @@ const CensoredVideo = () => {
           </span>
         </div>
 
-        <br />
+        {checkBrowser() ? <></> : <br />}
 
         <div>
           <b>Total Editing Time: </b>
@@ -98,7 +98,7 @@ const CensoredVideo = () => {
           </span>
         </div>
 
-        <br />
+        {checkBrowser() ? <></> : <br />}
 
         <div>
           <b>Speedup (compared to video length): </b>

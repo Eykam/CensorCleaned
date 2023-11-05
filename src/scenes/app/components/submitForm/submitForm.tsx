@@ -10,11 +10,8 @@ import {
 import { useAppDispatch, useAppSelector } from "../../../../store/store";
 import SubmitSettings from "./transcribeSubmit";
 import AudioWave from "../../../utils/components/audioWave";
-import TimestampSubmit from "../dashboard/components/censorSubmit";
-import { RequestStates } from "../../../../store/features/dataSlice";
-import Loading from "../../../utils/components/loading";
 import CloseIcon from "@mui/icons-material/Close";
-import { IconButton, Button } from "@mui/material";
+import { IconButton } from "@mui/material";
 import NotificationsOffOutlinedIcon from "@mui/icons-material/NotificationsOffOutlined";
 import NotificationsNoneOutlinedIcon from "@mui/icons-material/NotificationsNoneOutlined";
 

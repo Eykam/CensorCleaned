@@ -125,7 +125,7 @@ const Dashboard = ({
               </Box>
 
               <SelectorContainer
-                mobile={checkBrowser()}
+                mobile={false}
                 currWords={currWords}
                 displayWord={changeWord}
               />

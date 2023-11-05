@@ -1,33 +1,39 @@
 import { PayloadAction, createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import { jwtDecode, JwtPayload } from "jwt-decode";
-import { CredentialResponse } from "@react-oauth/google";
+import { JwtPayload } from "jwt-decode";
+import { fetchWithCSRF } from "../store";
 
 // const BASEURL = "http://192.168.1.171:8800";
 const BASEURL = "https://driven-fowl-privately.ngrok-free.app";
-// const BASEURL = "";
 
 export enum UserEndpoints {
-  login = "/login",
-  deleteUser = "/deleteUser",
-  // logout = "/logout",
+  login = "/login/google",
+  checkLoggedIn = "/exists",
+  logout = "/logout",
 }
 
-// export interface GoogleLoginPayload extends JwtPayload {
-//   picture: string;
-//   email: string;
-//   name: string;
-//   locale: string;
-// }
+export interface RequestHistory {
+  filename: string;
+  uuid: string;
+  type: string;
+  timestamp: string;
+  tokensBefore: number;
+  size: number;
+}
 
 export interface UserDetails {
-  gid: string;
-  email: string;
-  imageSrc: string;
+  google_id: string;
   name: string;
+  gmail: string;
+  verified: boolean;
+  picture: string;
   locale: string;
-  credits: number;
-  role: number;
+  tokens: number;
+  registerDate: number;
   new: boolean;
+  csrf: string;
+  uuid: string;
+  tokenLimit: number;
+  request: RequestHistory[];
 }
 
 export interface BooleanResponse {
@@ -42,116 +48,125 @@ export interface GetTokensResponse {
   [index: string]: string;
 }
 
-export const login = createAsyncThunk(
-  "user/login",
-  async (token: string, { rejectWithValue, fulfillWithValue }) => {
-    if (token !== "") {
-      try {
-        let userDetails = await fetch(BASEURL + UserEndpoints.login, {
-          method: "POST",
-          body: token,
-        });
+export const checkLoggedIn = createAsyncThunk(
+  "user/checkLoggedIn",
+  async (empty: null = null, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const res = await fetch(BASEURL + UserEndpoints.checkLoggedIn, {
+        method: "post",
+        credentials: "include",
+      });
 
-        let data = (await userDetails.json()) as UserDetails;
-        if (data != null)
-          return fulfillWithValue({ userDetails: data, token: token });
-        else rejectWithValue(new Error("empty response from auth server"));
-      } catch (e) {
-        console.log("Error Logging in:", (e as Error).message);
-        return rejectWithValue(e as Error);
-      }
+      if (res.status === 200) {
+        const currUser = (await res.json()) as UserDetails;
+        console.log("user", currUser);
+        return fulfillWithValue(currUser);
+      } else rejectWithValue(new Error("empty response from auth server"));
+    } catch (e) {
+      console.log("Error Logging in:", (e as Error).message);
+      return rejectWithValue(e as Error);
     }
   }
 );
 
-// export const logout = createAsyncThunk(
-//   "user/logout",
-//   async (gid: string, { rejectWithValue, fulfillWithValue }) => {
-//     try {
-//       let res = await fetch(BASEURL + UserEndpoints.logout);
-//       let status = (await res.json()) as BooleanResponse;
+export const logout = createAsyncThunk(
+  "user/logout",
+  async (empty: null = null, { rejectWithValue, fulfillWithValue }) => {
+    try {
+      const res = await fetchWithCSRF(BASEURL + UserEndpoints.logout, {
+        method: "post",
+      });
+      // const res = await fetch(BASEURL + UserEndpoints.logout, {
+      //   method: "post",
+      //   credentials: "include",
+      // });
 
-//       if (status["success"]) return fulfillWithValue(true);
-//       else return rejectWithValue("Failed to log out");
-//     } catch (e) {
-//       console.log("Error Logging out:", (e as Error).message);
-//       return rejectWithValue(e as Error);
+      console.log("Logout response", res);
+
+      if (res.status === 200) {
+        return fulfillWithValue(true);
+      } else return rejectWithValue("Failed to log out");
+    } catch (e) {
+      console.log("Error Logging out:", (e as Error).message);
+      return rejectWithValue(e as Error);
+    }
+  }
+);
+
+// export const deleteUser = createAsyncThunk(
+//   "user/deleteUser",
+//   async (token: string, { rejectWithValue, fulfillWithValue }) => {
+//     if (token !== "") {
+//       try {
+//         let res = await fetch(BASEURL + UserEndpoints.deleteUser, {
+//           method: "POST",
+//           body: token,
+//         });
+//         let status = (await res.json()) as BooleanResponse;
+
+//         if (status["success"]) return fulfillWithValue(true);
+//         else return rejectWithValue("Failed to log out");
+//       } catch (e) {
+//         console.log("Error Logging in:", (e as Error).message);
+//         return rejectWithValue(e as Error);
+//       }
 //     }
 //   }
 // );
 
-export const deleteUser = createAsyncThunk(
-  "user/deleteUser",
-  async (token: string, { rejectWithValue, fulfillWithValue }) => {
-    if (token !== "") {
-      try {
-        let res = await fetch(BASEURL + UserEndpoints.deleteUser, {
-          method: "POST",
-          body: token,
-        });
-        let status = (await res.json()) as BooleanResponse;
-
-        if (status["success"]) return fulfillWithValue(true);
-        else return rejectWithValue("Failed to log out");
-      } catch (e) {
-        console.log("Error Logging in:", (e as Error).message);
-        return rejectWithValue(e as Error);
-      }
-    }
-  }
-);
-
 const initialState: {
-  loggedIn: boolean;
   userDetails: UserDetails | null;
-  token: string;
+  login_url: string;
 } = {
-  loggedIn: false,
   userDetails: null,
-  token: "",
+  login_url: BASEURL + UserEndpoints.login,
 };
 
 export const userSlice = createSlice({
   name: "user",
   initialState: initialState,
   reducers: {
-    logout: (state) => {
-      state.loggedIn = false;
-      state.userDetails = null;
-      state.token = "";
+    setUser: (state, { payload }: PayloadAction<UserDetails>) => {
+      state.userDetails = payload;
+    },
+    setTokens: (state, { payload }: PayloadAction<number>) => {
+      if (state.userDetails) state.userDetails.tokens = payload;
     },
   },
   extraReducers(builder) {
-    builder.addCase(login.fulfilled, (state, action) => {
+    builder.addCase(checkLoggedIn.fulfilled, (state, action) => {
+      console.log("CheckLoggedIn fulfilled. Updating userDetails...");
       if (action.payload) {
-        state.loggedIn = true;
-        state.userDetails = action.payload.userDetails;
-        state.token = action.payload.token;
+        state.userDetails = action.payload;
+        console.log("User Details:", action.payload);
+        localStorage.setItem("csrf", action.payload.csrf);
       }
     });
-
-    builder.addCase(login.rejected, (state, action) => {
-      state.loggedIn = false;
+    builder.addCase(checkLoggedIn.rejected, (state, action) => {
+      console.log("CheckLoggedIn rejected. Deleting userDetails...");
+      console.log(action.payload);
       state.userDetails = null;
-      state.token = "";
     });
-
-    // builder.addCase(logout.fulfilled, (state, action) => {
+    builder.addCase(logout.fulfilled, (state, action) => {
+      console.log("Logout fulfilled. Deleting userDetails...");
+      if (action.payload) {
+        state.userDetails = null;
+      }
+    });
+    builder.addCase(logout.rejected, (state, action) => {
+      console.log("Logout rejected. Deleting userDetails...");
+      console.log(action.payload);
+      state.userDetails = null;
+    });
+    // builder.addCase(deleteUser.fulfilled, (state, action) => {
     //   if (action.payload) {
     //     state.loggedIn = false;
     //     state.userDetails = null;
+    //     state.token = "";
     //   }
     // });
-
-    builder.addCase(deleteUser.fulfilled, (state, action) => {
-      if (action.payload) {
-        state.loggedIn = false;
-        state.userDetails = null;
-        state.token = "";
-      }
-    });
   },
 });
 
 export default userSlice.reducer;
-export const { logout } = userSlice.actions;
+export const { setTokens, setUser } = userSlice.actions;

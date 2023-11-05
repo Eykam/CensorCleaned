@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { FileUpload } from "./fileSlice";
+import { fetchWithCSRF } from "../store";
 
 // const BASEURL = "http://192.168.1.171:8800";
 const BASEURL = "https://driven-fowl-privately.ngrok-free.app";
@@ -105,25 +106,29 @@ export const urlToFile = async (file: FileUpload): Promise<File | Error> => {
 
 export const sendFile = createAsyncThunk(
   "file/sendFile",
-  async (file: File, { rejectWithValue, fulfillWithValue }) => {
+  async (
+    { file, uuid }: { file: File; uuid: string },
+    { rejectWithValue, fulfillWithValue }
+  ) => {
     try {
       if (file != null && file.name !== "") {
         const formData = new FormData();
-        formData.append("uuid", generateUUID());
+        formData.append("uuid", uuid);
         formData.append("file", file);
 
-        let data = await fetch(BASEURL + endpoints.sendFile, {
+        let data = await fetchWithCSRF(BASEURL + endpoints.sendFile, {
           method: "POST",
-          headers: new Headers({
-            "ngrok-skip-browser-warning": "true",
-          }),
+          headers: {
+            // "ngrok-skip-browser-warning": "true",
+            size: String(file.size / 1000000),
+          },
           //Dont forget to remove and figure out problem
-          mode: "cors",
+          // mode: "cors",
           body: formData,
         });
 
         console.log("Sendfile data: ", data);
-        if (data != null) return fulfillWithValue(await data.text());
+        if (data.status === 200) return fulfillWithValue(await data.text());
         else rejectWithValue(new Error("empty response from server"));
       }
 
@@ -148,14 +153,13 @@ export const fetchTranscription = createAsyncThunk(
           contentType: args.contentType,
         });
         console.log("Transcription Body: ", body);
-        let data = await fetch(BASEURL + endpoints.fetchTranscription, {
+        let data = await fetchWithCSRF(BASEURL + endpoints.fetchTranscription, {
           method: "POST",
           headers: {
-            "ngrok-skip-browser-warning": "true",
             "Content-Type": "application/json; charset=utf-8",
           },
-          //Dont forget to remove and figure out problem
-          mode: "cors",
+          // //Dont forget to remove and figure out problem
+          // mode: "cors",
           body: body,
         });
 
@@ -180,14 +184,13 @@ export const fetchCensorship = createAsyncThunk(
     try {
       const body = JSON.stringify(args);
 
-      let data = await fetch(BASEURL + endpoints.fetchCensorship, {
+      let data = await fetchWithCSRF(BASEURL + endpoints.fetchCensorship, {
         method: "POST",
         headers: {
           "Content-Type": "application/json; charset=utf-8",
-          "ngrok-skip-browser-warning": "69420",
         },
-        //Dont forget to remove and figure out problem
-        mode: "cors",
+        // //Dont forget to remove and figure out problem
+        // mode: "cors",
         body: body,
       });
 

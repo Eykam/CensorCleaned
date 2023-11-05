@@ -9,11 +9,22 @@ body {
   width: 100%;
   margin: 0%;
   display: flex;
-  /* font-family: sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale; */
   background-color: #111111;
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: visible;
+}
+body::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 1200px) {
+  body {
+    width: 100%;
+    margin: 0%;
+    display: flex;
+    background-color: #111111;
+    overflow-y: visible;
+  }
 }
 
 code {

@@ -8,6 +8,26 @@ import { enableMapSet } from "immer";
 
 enableMapSet();
 
+const updateOptions = (options: RequestInit) => {
+  const csrf = localStorage.getItem("csrf");
+  let update = { ...options };
+
+  update["credentials"] = "include";
+  update["headers"] = {
+    ...update.headers,
+    "X-CSRF-Header": csrf ? csrf : "",
+    "ngrok-skip-browser-warning": "true",
+  };
+
+  return update;
+};
+
+export const fetchWithCSRF = async (url: string, options: RequestInit) => {
+  const newOptions = updateOptions(options);
+  console.log("new options on fetchWithCSRF:", newOptions);
+  return await fetch(url, newOptions);
+};
+
 export const store = configureStore({
   reducer: {
     file: fileSlice.reducer,

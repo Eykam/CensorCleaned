@@ -2,8 +2,11 @@ import React from "react";
 import { useAppDispatch, useAppSelector } from "../../../store/store";
 import { componentIDs } from "../../../store/features/formSlice";
 import Toggle from "../../utils/components/toggle";
+import { useNavigate } from "react-router-dom";
 
 const Description = () => {
+  const navigate = useNavigate();
+
   const checkSmaller = () => {
     return window.innerWidth <= 1500;
   };
@@ -13,15 +16,7 @@ const Description = () => {
   };
 
   const enterApp = () => {
-    const landingPage = document.getElementById(
-      "landing-page"
-    ) as HTMLDivElement;
-    const appEntry = document.getElementById("app-entry") as HTMLDivElement;
-
-    if (landingPage) landingPage.style.display = "none";
-    if (appEntry) appEntry.style.display = "flex";
-
-    return;
+    navigate("/app");
   };
 
   return (

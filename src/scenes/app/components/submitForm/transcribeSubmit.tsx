@@ -14,6 +14,7 @@ import { Mode } from "../../../../store/features/dataSlice";
 import ProgressBar from "../../../utils/components/progressBar";
 // import { socket } from "../../../../socket";
 import { Button } from "@mui/material";
+import { UserDetails } from "../../../../store/features/userSlice";
 
 const SubmitSettings = () => {
   //Constants
@@ -28,6 +29,7 @@ const SubmitSettings = () => {
   const currFileUpload: FileUpload | null = useAppSelector(
     (state) => state.file.uploadedFile
   );
+  const user = useAppSelector((state) => state.user.userDetails);
   const pending = useAppSelector((state) => state.data.transcription.status);
 
   //Refs
@@ -48,9 +50,9 @@ const SubmitSettings = () => {
   //UseEffect to trigger sendFile thunk when currFile is transformed into a file successfully
   useEffect(() => {
     if (currFile !== null && fetchData.sendFile.status === RequestStates.idle) {
-      dispatch(sendFile(currFile));
+      dispatch(sendFile({ file: currFile, uuid: user ? user.uuid : "" }));
     }
-  }, [currFile, fetchData.sendFile.status, dispatch]);
+  }, [currFile, fetchData.sendFile.status, dispatch, user]);
 
   //UseEffect to trigger fetchTranscription api call when sendFile has been executed successfully
   useEffect(() => {

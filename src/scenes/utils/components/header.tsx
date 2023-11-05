@@ -1,37 +1,36 @@
-import React, { useState, useRef, useEffect } from "react";
-import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import React from "react";
 import { Button } from "@mui/material";
-import UserMenu from "./userMenu";
+import UserMenu from "../../user/userMenu";
+import { JwtPayload } from "jwt-decode";
+import { useAppSelector } from "../../../store/store";
+import GoogleIcon from "@mui/icons-material/Google";
+import { useNavigate } from "react-router-dom";
+
+export interface GoogleLoginPayload extends JwtPayload {
+  picture: string;
+  email: string;
+  name: string;
+  locale: string;
+}
 
 const Header = () => {
-  const [user, setUser] = useState<null | CredentialResponse>(null);
+  const navigate = useNavigate();
+  const login_url = useAppSelector((state) => state.user.login_url);
+  const user = useAppSelector((state) => state.user.userDetails);
 
   const isMobile = () => {
-    return window.matchMedia("(max-width: 767px)").matches;
+    return window.innerWidth < 1200;
   };
 
-  const handleSuccess = (response: CredentialResponse) => {
-    console.log("Successfully logged in", response);
-    // setUser(response);
+  const getProfileImage = () => {
+    if (user) return user["picture"];
+    else return "";
   };
-
-  const handleError = () => {
-    console.log("Failed to log in");
-  };
-
-  const logOut = () => {
-    // setUser(null);
-  };
-
-  // useEffect(() => {
-  //   console.log("image src:", getProfileImage());
-  //   getProfileImage();
-  // }, [user]);
 
   return (
     <div
       style={{
-        width: "97%",
+        width: isMobile() ? "97%" : "98%",
         color: "rgb(226, 226, 226)",
         background: "#111111",
         padding: isMobile() ? "2% 1%" : ".5% 1%",
@@ -58,7 +57,7 @@ const Header = () => {
               }
         }
         onClick={() => {
-          window.location.reload();
+          navigate("/");
         }}
       >
         Sanitize.gg
@@ -73,16 +72,50 @@ const Header = () => {
             alignItems: "center",
           }}
         >
-          {/* <UserMenu img={getProfileImage()} /> */}
+          <UserMenu img={getProfileImage()} />
         </div>
       ) : (
-        // <GoogleLogin
-        //   onSuccess={(response) => handleSuccess(response)}
-        //   onError={handleError}
-        //   auto_select={true}
-        //   // isSignedIn={true}
-        // />
-        <></>
+        <>
+          <a
+            href={login_url}
+            style={{
+              width: isMobile() ? "22%" : "8%",
+              textDecoration: "none",
+            }}
+          >
+            <Button
+              variant="outlined"
+              style={{
+                display: "flex",
+                padding: "0 .5%",
+                width: "100%",
+                borderColor: "lightgray",
+                color: "lightgray",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  margin: "0",
+                  width: "100%",
+                  alignItems: "center",
+                }}
+              >
+                <GoogleIcon style={{ padding: "1%" }} />
+                <span
+                  style={{
+                    display: "block",
+                    height: "100%",
+                    fontSize: "100%",
+                    margin: "auto",
+                  }}
+                >
+                  <strong>Log In</strong>
+                </span>
+              </div>
+            </Button>
+          </a>
+        </>
       )}
     </div>
   );

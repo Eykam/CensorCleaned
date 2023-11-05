@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useAppDispatch, useAppSelector } from "../../../../store/store";
 import Toggle from "../../../utils/components/toggle";
 import { componentIDs } from "../../../../store/features/formSlice";
@@ -13,6 +13,12 @@ const FileInfo = () => {
   const transcriptionStatus = useAppSelector(
     (state) => state.data.transcription.status
   );
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const checkBrowser = () => {
+    return window.innerWidth < 1200;
+  };
 
   const checkIfPending = () => {
     return transcriptionStatus === RequestStates.pending;
@@ -21,6 +27,9 @@ const FileInfo = () => {
   useEffect(() => {
     if (transcriptionStatus === RequestStates.pending) {
       setLoading(true);
+      if (file?.fileType.includes("video") && videoRef.current)
+        videoRef.current.pause();
+      else if (audioRef.current) audioRef.current.pause();
     } else {
       setLoading(false);
     }
@@ -30,18 +39,28 @@ const FileInfo = () => {
     <Toggle id={componentIDs.fileInfo}>
       <div
         id="file-info-div"
-        style={{
-          width: "100%",
-          display: "block",
-        }}
+        style={
+          checkBrowser()
+            ? {
+                width: "100%",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                // alignItems: "center",
+              }
+            : {
+                width: "100%",
+                display: "block",
+              }
+        }
       >
-        <div style={{ width: "40vw" }}>
+        <div style={checkBrowser() ? {} : { width: "40vw" }}>
           <h3 style={{ marginTop: "0" }}>Submission Details:</h3>
 
           <span
             style={{
               display: "block",
-              maxWidth: "50%",
+              maxWidth: checkBrowser() ? "100%" : "50%",
               // textOverflow: "ellipsis",
               // overflow: "hidden",
             }}
@@ -60,7 +79,11 @@ const FileInfo = () => {
             <b>File Size:</b> {file?.fileSize}
           </p>
 
-          {loading && <Loading loaderId="transcribe" />}
+          {loading && (
+            <div style={{ margin: "auto" }}>
+              <Loading loaderId="transcribe" />
+            </div>
+          )}
         </div>
 
         <br />
@@ -72,6 +95,7 @@ const FileInfo = () => {
           {file && file.fileType.includes("audio") ? (
             <audio
               controls
+              ref={audioRef}
               src={file.fileUrl}
               style={{
                 width: "100%",
@@ -84,6 +108,7 @@ const FileInfo = () => {
               controls
               id="uploaded-video"
               autoPlay
+              ref={videoRef}
               src={file?.fileUrl}
               style={{
                 width: "100%",

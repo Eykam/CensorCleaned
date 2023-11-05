@@ -4,7 +4,6 @@ import { FixedSizeList as List } from "react-window";
 import ResultsWord from "./resultsWord";
 import { Paper, Box } from "@mui/material";
 import ResultTimestamps from "./resultTimestamps";
-import CensoredVideo from "../../utils/censoredVideo";
 
 const CensoredResults = () => {
   const [focusedWord, setFocusedWord] = useState("");
