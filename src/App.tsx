@@ -47,7 +47,7 @@ const App = () => {
           <></>
         </div>
 
-        {/* <div className="bg"></div> */}
+        <div className="bg"></div>
       </BrowserRouter>
     </div>
   );
