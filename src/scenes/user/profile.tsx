@@ -121,8 +121,9 @@ const Profile = () => {
       gap="20px"
       style={{
         height: "100%",
-        width: checkMobile() ? "95%" : "60%",
+        width: checkMobile() ? "90%" : "60%",
         padding: "2% 0",
+        margin: checkMobile() ? "5% 0" : "0",
       }}
     >
       <Box gridRow="span 1" gridColumn={checkMobile() ? "span 6" : "span 4"}>
