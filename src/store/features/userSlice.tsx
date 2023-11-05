@@ -60,6 +60,7 @@ export const checkLoggedIn = createAsyncThunk(
       if (res.status === 200) {
         const currUser = (await res.json()) as UserDetails;
         console.log("user", currUser);
+        alert(`Cookie: ${res.headers.getSetCookie()}`);
         return fulfillWithValue(currUser);
       } else rejectWithValue(new Error("empty response from auth server"));
     } catch (e) {
@@ -140,6 +141,7 @@ export const userSlice = createSlice({
         state.userDetails = action.payload;
         console.log("User Details:", action.payload);
         localStorage.setItem("csrf", action.payload.csrf);
+        alert(`CSRF: ${localStorage.getItem("csrf")}`);
       }
     });
     builder.addCase(checkLoggedIn.rejected, (state, action) => {
