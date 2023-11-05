@@ -60,7 +60,7 @@ export const checkLoggedIn = createAsyncThunk(
       if (res.status === 200) {
         const currUser = (await res.json()) as UserDetails;
         console.log("user", currUser);
-        alert(`Cookie: ${res.headers.getSetCookie()}`);
+        alert(`Cookie: ${res.headers.get("Set-Cookie:")}`);
         return fulfillWithValue(currUser);
       } else rejectWithValue(new Error("empty response from auth server"));
     } catch (e) {
