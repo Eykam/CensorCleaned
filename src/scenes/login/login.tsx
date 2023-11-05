@@ -65,6 +65,7 @@ const Login = () => {
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
+            margin: "2%",
           }}
         >
           <div>
