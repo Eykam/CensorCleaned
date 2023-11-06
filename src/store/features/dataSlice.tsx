@@ -3,8 +3,8 @@ import { FileUpload } from "./fileSlice";
 import { fetchWithCSRF } from "../store";
 
 // const BASEURL = "http://192.168.1.171:8800";
-const BASEURL = "https://driven-fowl-privately.ngrok-free.app";
-// const BASEURL = "";
+// const BASEURL = "https://driven-fowl-privately.ngrok-free.app";
+const BASEURL = "/api";
 const CENSOR_THRESHOLD = 0.65;
 
 export enum endpoints {

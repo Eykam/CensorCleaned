@@ -3,7 +3,8 @@ import { JwtPayload } from "jwt-decode";
 import { fetchWithCSRF } from "../store";
 
 // const BASEURL = "http://192.168.1.171:8800";
-const BASEURL = "https://driven-fowl-privately.ngrok-free.app";
+// const BASEURL = "https://driven-fowl-privately.ngrok-free.app";
+const BASEURL = "/api";
 
 export enum UserEndpoints {
   login = "/login/google",
